@@ -1,0 +1,27 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="layout.AppointmentsQueue">
+
+    <HorizontalScrollView
+        android:scrollbars="none"
+        android:id="@+id/scrollview_appts_queue"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:showDividers="middle"
+            android:divider="@drawable/divider_linear_layout"
+            android:orientation="horizontal"
+            android:id="@+id/linearlayout_appts_scrollview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+
+
+        </LinearLayout>
+
+
+    </HorizontalScrollView>
+
+</FrameLayout>
