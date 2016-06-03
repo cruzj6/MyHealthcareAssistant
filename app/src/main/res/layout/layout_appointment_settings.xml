@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:text="@string/appointment_settings"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_marginStart="10dp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="20dp"
+        android:text="@string/appointment_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:maxLength="30"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:id="@+id/editText_appt_title"
+        android:hint="@string/enter_name_of_doctor_or_a_title"
+        android:singleLine="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginStart="10dp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:text="Date"
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/textview_selected_date"
+            android:textColor="@android:color/darker_gray"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"/>
+
+        <Button
+            android:id="@+id/button_set_date"
+            android:text="Set Date"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginStart="10dp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:text="Time"
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/textview_selected_time"
+            android:textColor="@android:color/darker_gray"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"/>
+
+        <Button
+            android:id="@+id/button_set_time"
+            android:text="Set Time"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <View
+        android:layout_marginTop="10dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"></View>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginStart="10dp"
+            android:layout_weight="9"
+            android:text="Requires Lab Work?"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/checkbox_requires_labwork"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearlayout_labwork_days"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@android:color/black"
+            android:layout_marginStart="20dp"
+            android:text="Number of days results take"
+            android:layout_weight="9"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:maxLength="2"
+            android:background="@drawable/round_num_box_background"
+            android:textAlignment="center"
+            android:id="@+id/edittext_labwork_days"
+            android:inputType="number"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <!--NumberPicker
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:id="@+id/numberpicker_labwork_days"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"></NumberPicker-->
+    </LinearLayout>
+    <View
+        android:layout_marginTop="10dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"></View>
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textStyle="bold"
+            android:layout_marginStart="10dp"
+            android:textColor="@android:color/black"
+            android:text="@string/remind_me_days_before"
+            android:layout_weight="8"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:textAlignment="center"
+            android:maxLength="2"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/round_num_box_background"
+            android:id="@+id/edittext_remind_days_appt"
+            android:layout_weight="1"
+            android:inputType="number"
+            android:singleLine="true"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <CheckBox
+            android:id="@+id/checkbox_remind_days_appt"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <View
+        android:layout_marginTop="10dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"></View>
+
+    <TextView
+        android:layout_marginStart="10dp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"
+        android:text="@string/description_notes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/edittext_notes"
+        android:hint="@string/enter_notes_or_description_of_appointment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="150dp"
+        android:minEms="1000"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

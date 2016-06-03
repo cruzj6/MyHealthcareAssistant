@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res/android"
+    tools:context="com.cruzj6.mha.MainActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:layout_gravity="top"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <ImageButton
+            android:src="@drawable/ic_stethescope"
+            android:backgroundTint="@android:color/holo_green_light"
+            android:id="@+id/appointments_btn"
+            android:contentDescription="@string/placeholder"
+            android:layout_gravity="left"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="match_parent" />
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:src="@drawable/ic_pill"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:id="@+id/pillBox_btn"
+            android:layout_gravity="right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:layout_gravity="top"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <ImageButton
+            android:backgroundTint="@android:color/holo_red_light"
+            android:src="@android:drawable/ic_menu_set_as"
+            android:id="@+id/refill_btn"
+            android:contentDescription="@string/placeholder"
+            android:layout_gravity="left"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="match_parent" />
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent" />
+        <ImageButton
+            android:src="@android:drawable/ic_menu_set_as"
+            android:backgroundTint="@android:color/holo_green_light"
+            android:id="@+id/missed_logs_btn"
+            android:layout_gravity="right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/pill_queue_frame"
+        android:layout_gravity="top"
+        android:layout_weight="3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:paddingTop="10dp"
+        android:orientation="vertical"
+        android:layout_marginStart="5dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="20dp"
+        android:layout_weight="3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <TextView
+            android:layout_marginBottom="5dp"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:text="@string/appointment_queue_click_to_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/darker_gray"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <FrameLayout
+            android:id="@+id/appt_queue_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+    </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

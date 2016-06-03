@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">MHA</string>
+    <string name="placeholder">PlaceHolder</string>
+    <string name="phtime_string">00:00am phTime</string>
+    <string name="placeholder_string">PLACEHOLDER</string>
+    <string name="appointments_header_string">Appointments</string>
+    <string name="dashboard_header_string">Dashboard</string>
+    <string name="cancel">Cancel</string>
+    <string name="labwork_req">"Requires Labwork before "</string>
+    <string name="remove">remove</string>
+    <string name="home">home</string>
+    <string name="add_appointment">Add Appointment</string>
+
+    <!--TODO: This is staging URL-->
+    <string name="walgreen_api_url">https://services-qa.walgreens.com/api/util/mweb5url</string>
+    <string name="walgreens_api_key">HyF1AbSuDGSX0fW5AdeqNTmdWpiUBa5F</string>
+    <string name="walgreens_affid">hlthassist</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="appointment_queue_click_to_view">Appointment Queue (Click one to open)</string>
+    <string name="enter_notes_or_description_of_appointment">Enter Notes or Description of appointment...</string>
+    <string name="description_notes">Description/Notes</string>
+    <string name="remind_me_days_before">Remind me days before?</string>
+    <string name="appointment_settings">Appointment Settings</string>
+    <string name="appointment_title">Appointment Title</string>
+    <string name="enter_name_of_doctor_or_a_title">Enter Name of Doctor or a Title...</string>
+    <string name="title_activity_pillbox">PillboxActivity</string>
+    <string name="mha">My Healthcare Assistant</string>
+</resources>

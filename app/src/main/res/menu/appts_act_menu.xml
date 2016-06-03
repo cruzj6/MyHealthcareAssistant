@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_add_appointment"
+        android:icon="@drawable/ic_alarm_add_white_24dp"
+        app:showAsAction="always"
+        android:title="@string/add_appointment">
+
+    </item>
+    <item
+        android:id="@+id/action_remove_appts"
+        android:icon="@drawable/ic_trash_bin"
+        android:orderInCategory="0"
+        app:showAsAction="always"
+        android:title="@string/remove" />
+    <item
+        android:id="@+id/action_home"
+        android:icon="@drawable/ic_home_icon_24dp"
+        android:orderInCategory="0"
+        app:showAsAction="always"
+        android:title="@string/home" />
+</menu>

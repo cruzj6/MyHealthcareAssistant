@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.cruzj6.mha.PillboxActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1.2">
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout_mt"
+            android:layout_weight="0.3">
+            <Button
+                android:text="M"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:layout_width="150dp"
+                android:layout_height="match_parent" />
+            <Button
+                android:text="T"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:layout_width="150dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout_wr"
+            android:layout_below="@id/linearLayout_mt"
+            android:layout_alignParentStart="true"
+            android:layout_weight="0.3">
+            <Button
+                android:text="W"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:layout_width="150dp"
+                android:layout_height="match_parent" />
+            <Button
+                android:text="R"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:layout_width="150dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/linearlayout_FSa"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3">
+            <Button
+                android:text="F"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:layout_width="150dp"
+                android:layout_height="match_parent" />
+            <Button
+                android:text="Sa"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:layout_width="150dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/linearlayout_S"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.3"
+            android:weightSum="1"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:text="View All Pills"
+                android:layout_width="150dp"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:text="S"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:layout_width="150dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
