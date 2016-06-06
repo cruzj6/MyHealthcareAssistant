@@ -1,4 +1,4 @@
-package com.cruzj6.mha;
+package com.cruzj6.mha.fragments;
 
 
 
@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -17,12 +16,14 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.cruzj6.mha.R;
+import com.cruzj6.mha.activities.AppointmentsActivity;
 import com.cruzj6.mha.dataManagement.DatabaseManager;
-import com.cruzj6.mha.dataManagement.NotificationItemsManager;
+import com.cruzj6.mha.helpers.NotificationItemsManager;
+import com.cruzj6.mha.models.AppointmentItem;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

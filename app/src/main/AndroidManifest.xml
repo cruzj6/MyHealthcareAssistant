@@ -21,24 +21,24 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity" android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AppointmentsActivity" />
-        <activity android:name=".CreditsActivity" />
+        <activity android:name=".activities.AppointmentsActivity" android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activities.CreditsActivity" />
 
-        <receiver android:name=".dataManagement.NotificationItemsManager" />
+        <receiver android:name=".helpers.NotificationItemsManager" />
 
-        <activity android:name=".RefillRxActivity" />
+        <activity android:name=".activities.RefillRxActivity" />
         <activity
-            android:name=".PillboxActivity"
+            android:name=".activities.PillboxActivity"
             android:label="@string/title_activity_pillbox"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".dataManagement.RefillWebViewActivity"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+        <activity android:name=".activities.RefillWebViewActivity"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data
             android:name="com.google.android.gms.version"

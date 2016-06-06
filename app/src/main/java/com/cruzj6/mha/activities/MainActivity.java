@@ -1,4 +1,4 @@
-package com.cruzj6.mha;
+package com.cruzj6.mha.activities;
 
 
 import android.content.Intent;
@@ -7,14 +7,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
-import layout.AppointmentsQueue;
+import com.cruzj6.mha.R;
+
+import com.cruzj6.mha.fragments.AppointmentsQueue;
 
 public class MainActivity extends AppCompatActivity {
 

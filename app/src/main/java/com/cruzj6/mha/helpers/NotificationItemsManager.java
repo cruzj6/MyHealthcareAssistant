@@ -1,4 +1,4 @@
-package com.cruzj6.mha.dataManagement;
+package com.cruzj6.mha.helpers;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -8,9 +8,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.cruzj6.mha.AppointmentItem;
+import com.cruzj6.mha.dataManagement.DatabaseManager;
+import com.cruzj6.mha.models.AppointmentItem;
 import com.cruzj6.mha.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -21,14 +23,14 @@ public final class NotificationItemsManager extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Intent intentNew = new Intent(context, NotificationItemsManager.class);
-
         long apptId = intent.getExtras().getLong("item");
+
         //Get the item from the database
-        AppointmentItem theItem =
-                new DatabaseManager(context).loadAppointmentById(apptId);
+        AppointmentItem theItem = new DatabaseManager(context).loadAppointmentById(apptId);
 
         //Get the pendring intent
         PendingIntent pIntent = PendingIntent.getActivity(context, (int)theItem.getApptId(), intent, 0);
+        SimpleDateFormat f = new SimpleDateFormat("MM/dd hh:mm aaa");
 
         // build notification
         // the addAction re-use the same intent to keep the example short
@@ -37,8 +39,9 @@ public final class NotificationItemsManager extends BroadcastReceiver {
                 .setContentTitle(context.getString(R.string.mha))
                 .setContentText("APPOINTMENT REMINDER")
                 .setSmallIcon(R.drawable.ic_trash_bin))
-                .bigText("APPOINTMENT REMINDER\n" + theItem.getAppointmentTitle() + "\n" +
-                new Date(theItem.getApptDate()*1000).toString() +
+                .bigText("APPOINTMENT REMINDER\n"
+                        + theItem.getAppointmentTitle() + "\n" +
+                        f.format(new Date(theItem.getApptDate()*1000)) +
                         "\nNotes:\n" +
                         theItem.getNotes())
                 .build();

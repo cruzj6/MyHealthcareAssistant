@@ -5,10 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.ContactsContract;
 import android.util.Log;
 
-import com.cruzj6.mha.AppointmentItem;
+import com.cruzj6.mha.models.AppointmentItem;
 
 import java.util.ArrayList;
 import java.util.List;

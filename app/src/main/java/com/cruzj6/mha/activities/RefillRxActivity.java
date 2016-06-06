@@ -1,4 +1,4 @@
-package com.cruzj6.mha;
+package com.cruzj6.mha.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,9 +8,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.android.volley.Response;
-import com.cruzj6.mha.dataManagement.RefillWebViewActivity;
+import com.cruzj6.mha.R;
 import com.cruzj6.mha.dataManagement.WalLandingRespContainer;
-import com.cruzj6.mha.dataManagement.WalgreensRequestManager;
 
 public class RefillRxActivity extends AppCompatActivity {
 

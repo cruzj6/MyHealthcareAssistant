@@ -1,4 +1,4 @@
-package com.cruzj6.mha.dataManagement;
+package com.cruzj6.mha.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -6,28 +6,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
-import android.webkit.GeolocationPermissions;
-import android.webkit.JsResult;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.android.volley.Response;
-import com.cruzj6.mha.MainActivity;
 import com.cruzj6.mha.R;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
+import com.cruzj6.mha.dataManagement.WalLandingRespContainer;
+import com.cruzj6.mha.dataManagement.WalgreensRequestManager;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.UnsupportedEncodingException;
 
 public class RefillWebViewActivity extends AppCompatActivity {
 

@@ -1,38 +1,29 @@
-package com.cruzj6.mha;
+package com.cruzj6.mha.adapters;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.cruzj6.mha.dataManagement.DatabaseManager;
+import com.cruzj6.mha.fragments.AppointmentSettingsDialog;
+import com.cruzj6.mha.R;
+import com.cruzj6.mha.models.AppointmentItem;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.PriorityQueue;
 
 /**
  * Created by Joey on 5/23/16.
  */
-public class AppointmentsListViewAdapter extends ArrayAdapter<AppointmentItem>
+public class AppointmentsListViewAdapter extends RemovableItemListViewAdapter
 {
-    private boolean removeMode = false;
-
     public AppointmentsListViewAdapter(Context context, int resource, List<AppointmentItem> objects) {
         super(context, resource, objects);
 
@@ -48,18 +39,11 @@ public class AppointmentsListViewAdapter extends ArrayAdapter<AppointmentItem>
         TextView apptSubLabel = (TextView) itemView.findViewById(R.id.textview_label_sub);
 
         //Final to save reference for async click listener
-        final CheckBox itemChkBox = (CheckBox) itemView.findViewById(R.id.checkbox_remove_appt);
-        final AppointmentItem thisItem = getItem(position);
+        final CheckBox itemChkBox = (CheckBox) itemView.findViewById(R.id.checkbox_remove);
+        final AppointmentItem thisItem = (AppointmentItem) getItem(position);
 
-        //Set up the checkbox to toggle removal
-        itemChkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(itemChkBox.isChecked()) thisItem.removeMe = true;
-                else thisItem.removeMe = false;
-            }
-        });
-
+        //Call super class's removal setup method
+        setRemovalScan(itemChkBox, thisItem);
 
         //Create date item from the unix time and set to the sublabel
         Date apptDate = new Date((long)thisItem.getApptDate() * 1000);
@@ -85,10 +69,7 @@ public class AppointmentsListViewAdapter extends ArrayAdapter<AppointmentItem>
         }
 
         //Set the appointment title
-        apptLabel.setText(getItem(position).getAppointmentTitle());
-
-        if(removeMode) itemChkBox.setVisibility(View.VISIBLE);
-        else itemChkBox.setVisibility(View.INVISIBLE);
+        apptLabel.setText(thisItem.getAppointmentTitle());
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,42 +85,6 @@ public class AppointmentsListViewAdapter extends ArrayAdapter<AppointmentItem>
         });
 
         return itemView;
-    }
-
-    public void startRemoveMode()
-    {
-        removeMode = true;
-
-
-        //Unflag each item for removal in-case
-        for(int i = 0; i < getCount() - 1; i++)
-        {
-            AppointmentItem curItem = getItem(i);
-            curItem.removeMe = false;
-        }
-
-        notifyDataSetChanged();
-    }
-
-    public void endRemoveMode(Boolean save)
-    {
-        //If save mode, remove the ones that are flagged for removal
-        if(save) {
-
-            List<AppointmentItem> toRemove = new ArrayList<>();
-            //Check each item for removal flag
-            for(int i = 0; i < getCount() - 1; i++)
-            {
-                AppointmentItem curItem = getItem(i);
-                if(curItem.removeMe){
-                    new DatabaseManager(getContext()).deleteAppointment(curItem.getApptId());
-                }
-            }
-        }
-
-        //End remove mode
-        removeMode = false;
-        notifyDataSetChanged();
     }
 
 }

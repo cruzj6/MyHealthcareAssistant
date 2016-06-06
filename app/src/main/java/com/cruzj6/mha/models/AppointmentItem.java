@@ -1,20 +1,20 @@
-package com.cruzj6.mha;
+package com.cruzj6.mha.models;
 
 
-import android.util.Log;
+import android.content.Context;
+
+import com.cruzj6.mha.dataManagement.DatabaseManager;
+import com.cruzj6.mha.models.RemovableItem;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by Joey on 5/23/16.
  */
-public class AppointmentItem {
+public class AppointmentItem extends RemovableItem {
 
     //Publics
     public static final SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public boolean removeMe = false;
 
     //Privates
     private long remindDaysBefore;
@@ -82,5 +82,10 @@ public class AppointmentItem {
     public void setApptId(long id)
     {
         apptId = id;
+    }
+
+    @Override
+    public void removeFromDatabase(Context context) {
+        new DatabaseManager(context).deleteAppointment(getApptId());
     }
 }

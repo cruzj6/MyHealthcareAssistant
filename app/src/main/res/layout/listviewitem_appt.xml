@@ -51,7 +51,7 @@
     </LinearLayout>
 
     <CheckBox
-        android:id="@+id/checkbox_remove_appt"
+        android:id="@+id/checkbox_remove"
         android:visibility="invisible"
         android:layout_weight="2"
         android:layout_gravity="center_vertical"
