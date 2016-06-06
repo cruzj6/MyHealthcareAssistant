@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.cruzj6.mha.PillboxActivity">
+    tools:context=".activities.PillboxActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -61,20 +61,22 @@
             android:id="@+id/linearlayout_FSa"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.3">
             <Button
                 android:text="F"
+                android:layout_weight="0.5"
                 android:textSize="40sp"
                 android:textStyle="bold"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="match_parent" />
             <Button
                 android:text="Sa"
+                android:layout_weight="0.5"
                 android:textSize="40sp"
                 android:textStyle="bold"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="match_parent" />
         </LinearLayout>
         <LinearLayout

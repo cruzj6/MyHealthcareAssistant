@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:background="@drawable/background_circle"
+        android:src="@drawable/ic_pill"
+        android:layout_width="70dp"
+        android:layout_height="70dp" />
+
+    <Space
+        android:layout_weight="0.02"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/textview_pill_title"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:text="@string/placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textview_pill_days"
+            android:textSize="12sp"
+            android:textColor="@color/colorTextSuperDarkGray"
+            android:text="@string/placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/linearlayout_view_notes_layout"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/textview_Notes"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textSize="14sp"
+                android:text="@string/view_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:layout_marginStart="5dp"
+                android:src="@drawable/ic_announcement_orange_24dp"
+                android:layout_width="14dp"
+                android:layout_height="14dp" />
+        </LinearLayout>
+
+        <TextView
+            android:text="@string/times_differ_per_day"
+            android:id="@+id/textview_times_differ"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/textview_take_at_times"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:text="@string/placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textview_refill_by"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:text="@string/placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/checkbox_remove"
+        android:visibility="invisible"
+        android:layout_weight="0.1"
+        android:layout_gravity="center_vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

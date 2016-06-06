@@ -1,24 +1,18 @@
-package layout;
+package com.cruzj6.mha.fragments;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.Space;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.cruzj6.mha.AppointmentItem;
-import com.cruzj6.mha.AppointmentSettingsDialog;
+import com.cruzj6.mha.models.AppointmentItem;
 import com.cruzj6.mha.R;
 import com.cruzj6.mha.dataManagement.DatabaseManager;
 

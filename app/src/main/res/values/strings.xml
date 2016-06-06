@@ -26,4 +26,6 @@
     <string name="enter_name_of_doctor_or_a_title">Enter Name of Doctor or a Title...</string>
     <string name="title_activity_pillbox">PillboxActivity</string>
     <string name="mha">My Healthcare Assistant</string>
+    <string name="times_differ_per_day">Times differ per day</string>
+    <string name="view_note">VIEW NOTE</string>
 </resources>

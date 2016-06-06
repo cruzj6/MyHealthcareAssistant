@@ -11,9 +11,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/linearLayout">
+        android:id="@+id/linearLayout_pill_list">
         <ListView
-            android:id="@+id/appts_listView"
+            android:id="@+id/listview_pills"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
