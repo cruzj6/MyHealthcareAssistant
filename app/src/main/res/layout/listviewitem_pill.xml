@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:background="@drawable/background_circle"
-        android:src="@drawable/ic_pill"
-        android:layout_width="70dp"
-        android:layout_height="70dp" />
+    <LinearLayout
+        android:layout_marginStart="5dp"
+        android:layout_gravity="center_vertical"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="7dp"
+            android:background="@drawable/background_circle"
+            android:src="@drawable/ic_pill"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+    </LinearLayout>
 
     <Space
         android:layout_weight="0.02"
@@ -65,20 +76,19 @@
         </LinearLayout>
 
         <TextView
-            android:text="@string/times_differ_per_day"
-            android:id="@+id/textview_times_differ"
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
             android:id="@+id/textview_take_at_times"
             android:textColor="@android:color/black"
             android:textSize="12sp"
             android:text="@string/placeholder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
+        <TextView
+            android:text="@string/times_differ_per_day"
+            android:id="@+id/textview_times_differ"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/textview_refill_by"
             android:textColor="@android:color/black"

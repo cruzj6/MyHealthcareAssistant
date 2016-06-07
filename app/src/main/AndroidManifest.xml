@@ -38,6 +38,7 @@
             android:name=".activities.PillboxActivity"
             android:label="@string/title_activity_pillbox"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activities.PillListActivity"/>
         <activity android:name=".activities.RefillWebViewActivity"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data

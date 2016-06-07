@@ -8,12 +8,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import com.cruzj6.mha.R;
 
 import com.cruzj6.mha.fragments.AppointmentsQueue;
+import com.cruzj6.mha.fragments.PillsQueue;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,10 +24,10 @@ public class MainActivity extends AppCompatActivity {
 
     //View components
     static FrameLayout apptFrame;
-    static ImageButton pillBoxButton;
-    static ImageButton appointmentsButton;
-    static ImageButton refillButton;
-    static ImageButton otherButton;
+    static Button pillBoxButton;
+    static Button appointmentsButton;
+    static Button refillButton;
+    static Button otherButton;
     static ActionBar ab;
 
     @Override
@@ -38,10 +40,10 @@ public class MainActivity extends AppCompatActivity {
         ab.setTitle(R.string.dashboard_header_string);
 
         //Get button hanldes
-        appointmentsButton = (ImageButton) findViewById(R.id.appointments_btn);
-        pillBoxButton = (ImageButton) findViewById(R.id.pillBox_btn);
-        refillButton = (ImageButton) findViewById(R.id.refill_btn);
-        otherButton = (ImageButton) findViewById(R.id.missed_logs_btn);
+        appointmentsButton = (Button) findViewById(R.id.appointments_btn);
+        pillBoxButton = (Button) findViewById(R.id.pillBox_btn);
+        refillButton = (Button) findViewById(R.id.refill_btn);
+        otherButton = (Button) findViewById(R.id.missed_logs_btn);
 
         //Set click Events
         appointmentsButton.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onResume();
         buildApptQueueFragment();
+        buildPillQueueFragment();
     }
 
     public void buildApptQueueFragment()
@@ -85,6 +88,13 @@ public class MainActivity extends AppCompatActivity {
         Fragment apptFrag = new AppointmentsQueue();
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction().replace(R.id.appt_queue_frame, apptFrag).commit();
+    }
+
+    public void buildPillQueueFragment()
+    {
+        Fragment pillFrag = new PillsQueue();
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().replace(R.id.pill_queue_frame, pillFrag).commit();
     }
 
 

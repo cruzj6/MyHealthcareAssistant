@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.cruzj6.mha.R;
 import com.cruzj6.mha.activities.AppointmentsActivity;
@@ -205,6 +206,11 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
 
                         //Notification setup
                         NotificationItemsManager.createApptNotification(apptItemId, getContext());
+
+                        //Make toast
+                        String toastString = mode == SettingsTypes.EDIT_EXISTING ? "Appointment Changes Saved" :
+                                (mode == SettingsTypes.NEW_APPOINTMENT ? "Appointment Added" : "Saved");
+                        Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
 
                         //Trigger reload for the appointments activity
                         ((AppointmentsActivity)getContext()).buildApptsList();
