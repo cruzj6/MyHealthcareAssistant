@@ -13,7 +13,7 @@
             android:showDividers="middle"
             android:divider="@drawable/divider_linear_layout"
             android:orientation="horizontal"
-            android:id="@+id/linearlayout_appts_scrollview"
+            android:id="@+id/linearlayout_queue_scrollview"
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
 

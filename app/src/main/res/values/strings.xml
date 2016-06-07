@@ -17,7 +17,7 @@
     <string name="walgreens_affid">hlthassist</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="appointment_queue_click_to_view">Appointment Queue (Click one to open)</string>
+    <string name="appointment_queue_click_to_view">Appointment Queue</string>
     <string name="enter_notes_or_description_of_appointment">Enter Notes or Description of appointment...</string>
     <string name="description_notes">Description/Notes</string>
     <string name="remind_me_days_before">Remind me days before?</string>
@@ -28,4 +28,9 @@
     <string name="mha">My Healthcare Assistant</string>
     <string name="times_differ_per_day">Times differ per day</string>
     <string name="view_note">VIEW NOTE</string>
+    <string name="take">Take: %1$s</string>
+    <string name="refill_by">"Refill by: %1$s"</string>
+    <string name="labwork">Labwork By</string>
+    <string name="select_then_tap_trash">Select, then tap trash to delete selected</string>
+    <string name="medication_queue">Medication Queue</string>
 </resources>

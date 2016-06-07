@@ -1,11 +1,13 @@
 package com.cruzj6.mha.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.cruzj6.mha.fragments.AppointmentSettingsDialog;
 import com.cruzj6.mha.adapters.AppointmentsListViewAdapter;

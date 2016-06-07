@@ -17,6 +17,7 @@ import com.cruzj6.mha.R;
 import com.cruzj6.mha.dataManagement.DatabaseManager;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -57,10 +58,10 @@ public class AppointmentsQueue extends Fragment {
 
         //TODO: Sort by date
         //Inflate the view
-        View theView =  inflater.inflate(R.layout.fragment_appointments_queue, container, false);
+        View theView =  inflater.inflate(R.layout.fragment_queue, container, false);
 
         //Get the scrollview's linear layout
-        LinearLayout apptsLayout = (LinearLayout) theView.findViewById(R.id.linearlayout_appts_scrollview);
+        LinearLayout apptsLayout = (LinearLayout) theView.findViewById(R.id.linearlayout_queue_scrollview);
 
         //Get our appointment data from the database and go through each one
         List<AppointmentItem> apptsList = new DatabaseManager(getContext()).loadAppointmentItems();
@@ -96,6 +97,25 @@ public class AppointmentsQueue extends Fragment {
                     dialog.show(((AppCompatActivity)getContext()).getSupportFragmentManager(), "Appointment Settings");
                 }
             });
+
+            //Set up labwork label if needed
+            if(item.getRequiresLabWork())
+            {
+                String labworkString = getString(R.string.labwork);
+                TextView labworkLabel = (TextView) layoutItem.findViewById(R.id.textview_labwork_by);
+
+                //Get what day the labwork needs to be done by
+                Calendar c = Calendar.getInstance();
+                c.setTime(date);
+                long timeAdd = item.getLabworkDaysBefore();
+                c.add(Calendar.DATE, -(int)timeAdd);
+                f = new SimpleDateFormat("MM/dd/yy");
+
+                //Set up the labwork label with this data
+                labworkLabel.setVisibility(View.VISIBLE);
+                labworkLabel.setText(labworkString + " " + f.format(c.getTime()));
+            }
+
             //Finally add it to the layout
             apptsLayout.addView(layoutItem);
         }

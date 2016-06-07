@@ -6,6 +6,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.cruzj6.mha.R;
 
@@ -50,6 +51,7 @@ public abstract class ListActivity extends AppCompatActivity
                     removeMode = true;
 
                     startRemoveActionMode();
+                    Toast.makeText(this, R.string.select_then_tap_trash, Toast.LENGTH_SHORT).show();
                     onRemoveModeStart();
                 }
                 break;

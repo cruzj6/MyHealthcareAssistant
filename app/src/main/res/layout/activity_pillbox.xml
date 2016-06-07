@@ -23,12 +23,16 @@
             android:layout_weight="0.3">
             <Button
                 android:text="M"
+                android:onClick="showPillListForDay"
+                android:id="@+id/button_day_m"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 android:layout_width="150dp"
                 android:layout_height="match_parent" />
             <Button
                 android:text="T"
+                android:onClick="showPillListForDay"
+                android:id="@+id/button_day_t"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 android:layout_width="150dp"
@@ -46,12 +50,16 @@
             android:layout_weight="0.3">
             <Button
                 android:text="W"
+                android:onClick="showPillListForDay"
+                android:id="@+id/button_day_w"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 android:layout_width="150dp"
                 android:layout_height="match_parent" />
             <Button
                 android:text="R"
+                android:onClick="showPillListForDay"
+                android:id="@+id/button_day_r"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 android:layout_width="150dp"
@@ -66,6 +74,8 @@
             android:layout_weight="0.3">
             <Button
                 android:text="F"
+                android:onClick="showPillListForDay"
+                android:id="@+id/button_day_f"
                 android:layout_weight="0.5"
                 android:textSize="40sp"
                 android:textStyle="bold"
@@ -73,6 +83,8 @@
                 android:layout_height="match_parent" />
             <Button
                 android:text="Sa"
+                android:onClick="showPillListForDay"
+                android:id="@+id/button_day_sa"
                 android:layout_weight="0.5"
                 android:textSize="40sp"
                 android:textStyle="bold"
@@ -90,11 +102,15 @@
 
             <Button
                 android:text="View All Pills"
+                android:onClick="showPillListForDay"
+                android:id="@+id/button_day_all"
                 android:layout_width="150dp"
                 android:layout_height="match_parent" />
 
             <Button
                 android:text="S"
+                android:onClick="showPillListForDay"
+                android:id="@+id/button_day_s"
                 android:textSize="40sp"
                 android:textStyle="bold"
                 android:layout_width="150dp"
