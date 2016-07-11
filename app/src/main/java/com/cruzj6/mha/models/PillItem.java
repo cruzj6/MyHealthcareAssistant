@@ -23,16 +23,32 @@ public class PillItem extends RemovableItem {
     private long refillDate;
     private List<long[]> timesPerDay = new ArrayList<>();
 
-    public PillItem(String title, String instr, int duration, long untilDate, long refillDate)
+    private PillItem(String title, String instr, long refillDate)
     {
         this.refillDate = refillDate;
         this.title = title;
         this.instr = instr;
-        this.duration = duration;
-        this.untilDate = untilDate;
-
         for(int i = 0; i < 7; i++)
             timesPerDay.add(null);
+    }
+
+    public PillItem(String title, String instr, int duration, long refillDate)
+    {
+        this(title, instr, refillDate);
+        this.duration = duration;
+        this.untilDate = -1;
+    }
+
+    public PillItem(String title, String instr,long untilDate, long refillDate)
+    {
+        this(title, instr, refillDate);
+        this.untilDate = untilDate;
+        this.duration = -1;
+    }
+
+    public List<long[]> getTimesPerDay()
+    {
+        return timesPerDay;
     }
 
     public void setTimesForDay(Days day, long[] times)
@@ -89,5 +105,10 @@ public class PillItem extends RemovableItem {
 
     public void setPillId(long id){
         pillId = id;
+    }
+
+    public boolean getIsEndByDate()
+    {
+        return duration == -1;
     }
 }

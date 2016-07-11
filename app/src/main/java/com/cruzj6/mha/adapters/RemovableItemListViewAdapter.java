@@ -34,8 +34,8 @@ public class RemovableItemListViewAdapter extends ArrayAdapter<RemovableItem> {
         });
 
         //If we are in remove mode
-        if(removeMode) itemRemoveChkBox.setVisibility(View.VISIBLE);
-        else itemRemoveChkBox.setVisibility(View.INVISIBLE);
+        if(removeMode) {itemRemoveChkBox.setVisibility(View.VISIBLE);}
+        else itemRemoveChkBox.setVisibility(View.GONE);
     }
 
     public final void startRemoveMode()
@@ -55,19 +55,22 @@ public class RemovableItemListViewAdapter extends ArrayAdapter<RemovableItem> {
 
     public final void endRemoveMode(Boolean save)
     {
-        //If save mode, remove the ones that are flagged for removal
-        if(save) {
 
-            List<AppointmentItem> toRemove = new ArrayList<>();
-            //Check each item for removal flag
-            for(int i = 0; i < getCount() - 1; i++)
-            {
-                RemovableItem curItem = getItem(i);
+        List<AppointmentItem> toRemove = new ArrayList<>();
+        //Check each item for removal flag
+        for(int i = 0; i < getCount() - 1; i++)
+        {
+            RemovableItem curItem = getItem(i);
+            //If save mode, remove the ones that are flagged for removal
+            if(save) {
                 if(curItem.getShouldRemove()){
                     curItem.removeFromDatabase(getContext());
                 }
             }
+            else
+                curItem.setShouldRemove(false);
         }
+
 
         //End remove mode
         removeMode = false;

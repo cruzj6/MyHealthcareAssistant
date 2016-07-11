@@ -1,6 +1,7 @@
 package com.cruzj6.mha.adapters;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,11 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.cruzj6.mha.fragments.AppointmentSettingsDialog;
 import com.cruzj6.mha.R;
 import com.cruzj6.mha.models.AppointmentItem;
+import com.cruzj6.mha.models.ItemSettingsInvokeHandler;
+import com.cruzj6.mha.models.SettingsTypes;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,6 +39,7 @@ public class AppointmentsListViewAdapter extends RemovableItemListViewAdapter
         //Get our views
         LayoutInflater inf = LayoutInflater.from(getContext());
         View itemView = inf.inflate(R.layout.listviewitem_appt, null);
+        ImageButton notesBtn = (ImageButton) itemView.findViewById(R.id.button_show_item_notes);
         TextView apptLabel = (TextView) itemView.findViewById(R.id.textview_label);
         TextView apptSubLabel = (TextView) itemView.findViewById(R.id.textview_label_sub);
 
@@ -61,7 +66,7 @@ public class AppointmentsListViewAdapter extends RemovableItemListViewAdapter
             c.setTime(apptDate);
             long timeAdd = thisItem.getLabworkDaysBefore();
             c.add(Calendar.DATE, -(int)timeAdd);
-            f = new SimpleDateFormat("MM/dd/yy");
+            f.applyPattern("MM/dd/yy");
 
             //Set up the labwork label with this data
             labworkLabel.setVisibility(View.VISIBLE);
@@ -71,16 +76,15 @@ public class AppointmentsListViewAdapter extends RemovableItemListViewAdapter
         //Set the appointment title
         apptLabel.setText(thisItem.getAppointmentTitle());
 
-        itemView.setOnClickListener(new View.OnClickListener() {
+        //See if we need notes button
+        notesBtn.setVisibility(thisItem.getNotes().equals("") ? View.INVISIBLE : View.VISIBLE);
+        notesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Give it the id of this item so it can get it from the db to edit
-                AppointmentSettingsDialog dialog = new AppointmentSettingsDialog();
-                Bundle args = new Bundle();
-                args.putSerializable("mode", AppointmentSettingsDialog.SettingsTypes.EDIT_EXISTING);
-                args.putLong("id", thisItem.getApptId());
-                dialog.setArguments(args);
-                dialog.show(((AppCompatActivity)getContext()).getSupportFragmentManager(), "Appointment Settings");
+                AlertDialog.Builder ad = new AlertDialog.Builder(getContext());
+                ad.setMessage(thisItem.getNotes());
+                ad.setTitle("Appointment Notes");
+                ad.show();
             }
         });
 

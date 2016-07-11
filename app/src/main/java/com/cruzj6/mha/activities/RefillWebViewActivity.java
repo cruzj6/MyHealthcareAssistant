@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -20,6 +21,8 @@ import com.cruzj6.mha.dataManagement.WalgreensRequestManager;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
 
 public class RefillWebViewActivity extends AppCompatActivity {
 
@@ -42,8 +45,8 @@ public class RefillWebViewActivity extends AppCompatActivity {
 
 
         webview = (WebView) findViewById(R.id.webview);
-        webview.setWebViewClient(new WebViewController());
         webview.getSettings().setJavaScriptEnabled(true);
+        webview.setWebViewClient(new WebViewController());
         webview.setVisibility(View.VISIBLE);
 
         /*webview.setWebChromeClient(new WebChromeClient() {
@@ -103,14 +106,13 @@ public class RefillWebViewActivity extends AppCompatActivity {
                     jsonObject.put("appCallBackScheme", "refillbyscan://handleControl");
                     jsonObject.put("appCallBackAction", "callBackAction");
                     jsonObject.put("trackingId",
-                            String.valueOf(System.currentTimeMillis() / 1000l));
+                            String.valueOf(System.currentTimeMillis() / 1000L));
                     try {
-                        webview.postUrl(response.getUrl(),
-                                jsonObject.toString().getBytes());
+                        //TODO: please be their end...
+                        webview.postUrl(response.getUrl(), jsonObject.toString().getBytes());
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
-;
+                    };
                 }
                 catch(Exception e)
                 {
@@ -169,14 +171,15 @@ public class RefillWebViewActivity extends AppCompatActivity {
 
             Uri url1 = Uri.parse(url);
             if (url1 != null
-                    && url1.getScheme().equalsIgnoreCase("refillbyScan")) {
+                    && url1.getScheme().equalsIgnoreCase("refillbyscan")) {
                 String action = url1.getQueryParameter("callBackAction");
                 if (action.equalsIgnoreCase("back")
                         || action.equalsIgnoreCase("fillAnother")
                         || action.equalsIgnoreCase("close")
                         || action.equalsIgnoreCase("cancel")
                         || action.equalsIgnoreCase("txCancel")
-                        || action.equalsIgnoreCase("refillTryAgain")) {
+                        || action.equalsIgnoreCase("refillTryAgain")
+                    ) {
 
                     closeWB();
                     return false;

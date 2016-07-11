@@ -10,11 +10,12 @@ import android.widget.Button;
 import com.android.volley.Response;
 import com.cruzj6.mha.R;
 import com.cruzj6.mha.dataManagement.WalLandingRespContainer;
+import com.cruzj6.mha.dataManagement.WalgreensRequestManager;
 
 public class RefillRxActivity extends AppCompatActivity {
 
-    private static final String TAG = "RefillRxActivity";
-    private static Button testWalReqBtn;
+    private final String TAG = "RefillRxActivity";
+    private Button testWalReqBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

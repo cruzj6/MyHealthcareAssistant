@@ -21,10 +21,11 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.cruzj6.mha.R;
-import com.cruzj6.mha.activities.AppointmentsActivity;
 import com.cruzj6.mha.dataManagement.DatabaseManager;
 import com.cruzj6.mha.helpers.NotificationItemsManager;
 import com.cruzj6.mha.models.AppointmentItem;
+import com.cruzj6.mha.models.ItemSettingsInvokeHandler;
+import com.cruzj6.mha.models.SettingsTypes;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,23 +41,24 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
     //Set default date
     long setUnixDate = System.currentTimeMillis() / 1000L;
 
-    private static EditText apptTitleEditText;
-    private static EditText labworkEditText;
-    private static EditText remindDaysEditText;
-    private static EditText notesEditText;
-    private static CheckBox remindDaysCheckbox;
-    private static CheckBox requiresLabworkCheckbox;
-    private static Button setDateButton;
-    private static Button setTimeButton;
-    private static LinearLayout labworkDaysLayout;
-    private static TextView selectedTimeTextView;
-    private static TextView selectedDateTextView;
+    private EditText apptTitleEditText;
+    private EditText labworkEditText;
+    private EditText remindDaysEditText;
+    private EditText notesEditText;
+    private CheckBox remindDaysCheckbox;
+    private CheckBox requiresLabworkCheckbox;
+    private Button setDateButton;
+    private Button setTimeButton;
+    private LinearLayout labworkDaysLayout;
+    private TextView selectedTimeTextView;
+    private TextView selectedDateTextView;
     //private static NumberPicker labworkNumberPicker;
+
+    private ItemSettingsInvokeHandler handler = null;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         //Set up date picker and date refs
         DatePickerDialog dp;
 
@@ -64,7 +66,7 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         //Inflate the view
-        View apptSettingsView = inflater.inflate(R.layout.layout_appointment_settings, null);
+        View apptSettingsView = inflater.inflate(R.layout.dialog_appointment_settings, null);
 
         //Get our control references
         apptTitleEditText = (EditText) apptSettingsView.findViewById(R.id.editText_appt_title);
@@ -105,7 +107,7 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
             //Set up the labels
             setDateTimeLabels(setDate);
         }
-        if(mode == SettingsTypes.NEW_APPOINTMENT)
+        if(mode == SettingsTypes.NEW_ITEM)
         {
             //Set up default date
             Date setDate = new Date(setUnixDate*1000);
@@ -113,7 +115,7 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
         }
 
         //Set conditional diplays based on checks
-        remindDaysEditText.setVisibility(remindDaysCheckbox.isChecked() ? View.VISIBLE : View.GONE);
+        remindDaysEditText.setVisibility(remindDaysCheckbox.isChecked() ? View.VISIBLE : View.INVISIBLE);
         labworkDaysLayout.setVisibility(requiresLabworkCheckbox.isChecked() ? View.VISIBLE : View.GONE);
 
         //Set up the click events for buttons and others
@@ -121,7 +123,7 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
             @Override
             public void onClick(View v) {
                 //Only show if the box is checked pertaining to it
-                remindDaysEditText.setVisibility(remindDaysCheckbox.isChecked() ? View.VISIBLE : View.GONE);
+                remindDaysEditText.setVisibility(remindDaysCheckbox.isChecked() ? View.VISIBLE : View.INVISIBLE);
             }
         });
 
@@ -141,10 +143,10 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
                 SimpleDateFormat f = new SimpleDateFormat("MM");
                 int mon = Integer.parseInt(f.format(setDate));
 
-                f = new SimpleDateFormat("dd");
+                f.applyPattern("dd");
                 int day = Integer.parseInt(f.format(setDate));
 
-                f = new SimpleDateFormat("yyyy");
+                f.applyPattern("yyyy");
                 int year = Integer.parseInt(f.format(setDate));
 
                 //Deploy the date picker, this as its listener
@@ -161,7 +163,7 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
                 SimpleDateFormat f = new SimpleDateFormat("HH");
                 int hour = Integer.parseInt(f.format(setDate));
 
-                f = new SimpleDateFormat("mm");
+                f.applyPattern("mm");
                 int minutes = Integer.parseInt(f.format(setDate));
 
                 //Deploy time picker
@@ -209,12 +211,12 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
 
                         //Make toast
                         String toastString = mode == SettingsTypes.EDIT_EXISTING ? "Appointment Changes Saved" :
-                                (mode == SettingsTypes.NEW_APPOINTMENT ? "Appointment Added" : "Saved");
+                                (mode == SettingsTypes.NEW_ITEM ? "Appointment Added" : "Saved");
                         Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
 
-                        //Trigger reload for the appointments activity
-                        ((AppointmentsActivity)getContext()).buildApptsList();
-
+                        //Trigger reload or whatever handler chooses to do
+                        if(handler != null)
+                            handler.onItemSaved();
 
                     }
                 })
@@ -224,7 +226,14 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
                     }
                 });
 
-        return builder.create();
+        Dialog d = builder.create();
+        d.setCanceledOnTouchOutside(false);
+        return d;
+    }
+
+    public void setOnSaveHandler(ItemSettingsInvokeHandler handler)
+    {
+        this.handler = handler;
     }
 
     private void setDateTimeLabels(Date setDate)
@@ -233,7 +242,7 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
         c.setTime(setDate);
         SimpleDateFormat f = new SimpleDateFormat("MM/dd/yy");
         selectedDateTextView.setText(f.format(setDate));
-        f = new SimpleDateFormat("hh:mm aaa");
+        f.applyPattern("hh:mm aaa");
         selectedTimeTextView.setText(f.format(setDate));
     }
 
@@ -268,9 +277,4 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
         setDateTimeLabels(c.getTime());
     }
 
-    public enum SettingsTypes
-    {
-        EDIT_EXISTING,
-        NEW_APPOINTMENT
-    }
 }

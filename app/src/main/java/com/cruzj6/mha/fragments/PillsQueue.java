@@ -26,7 +26,7 @@ import java.util.List;
  * Created by Joey on 6/6/16.
  */
 public class PillsQueue extends Fragment {
-    private static HorizontalScrollView scrollView;
+    private HorizontalScrollView scrollView;
 
     public PillsQueue(){}
 

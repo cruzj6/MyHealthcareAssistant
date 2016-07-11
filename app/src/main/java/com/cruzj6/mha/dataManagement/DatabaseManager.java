@@ -32,6 +32,8 @@ public class DatabaseManager extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         db.delete(DatabaseContract.AppointmentEntry.TABLE_NAME,
                 DatabaseContract.AppointmentEntry._ID + "=" + apptId, null);
+
+        db.close();
     }
 
     public void deletePill(long pillId)
@@ -39,6 +41,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         db.delete(DatabaseContract.PillEntry.TABLE_NAME,
                 DatabaseContract.PillEntry._ID + "=" + pillId, null);
+        db.close();
     }
 
     public long saveAppointment(AppointmentItem apptItem)
@@ -61,6 +64,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
             //If already exists update it
             db.update(DatabaseContract.AppointmentEntry.TABLE_NAME, newData,
                         DatabaseContract.AppointmentEntry._ID + "=" + apptItem.getApptId(), null);
+        db.close();
         return apptItem.getApptId();
     }
 
@@ -105,11 +109,18 @@ public class DatabaseManager extends SQLiteOpenHelper{
                 //Finally add it
                 newData.put(dayDBContract[i], timesBuilder.toString());
             }
+            else newData.putNull(dayDBContract[i]);
         }
 
         //Final data
-        newData.put(DatabaseContract.PillEntry.COLUMN_NAME_DURATION, pillItem.getDuration());
-        newData.put(DatabaseContract.PillEntry.COLUMN_NAME_UNTIL_DATE, pillItem.getUntilDate());
+        if(!pillItem.getIsEndByDate()) {
+            newData.put(DatabaseContract.PillEntry.COLUMN_NAME_UNTIL_DATE, -1);
+            newData.put(DatabaseContract.PillEntry.COLUMN_NAME_DURATION, pillItem.getDuration());
+        }
+        else {
+            newData.put(DatabaseContract.PillEntry.COLUMN_NAME_DURATION, -1);
+            newData.put(DatabaseContract.PillEntry.COLUMN_NAME_UNTIL_DATE, pillItem.getUntilDate());
+        }
         newData.put(DatabaseContract.PillEntry.COLUMN_NAME_REFILL_DATE, pillItem.getRefillDate());
 
         if(pillItem.getPillId() == -1)
@@ -119,6 +130,8 @@ public class DatabaseManager extends SQLiteOpenHelper{
             //If already exists update it
             db.update(DatabaseContract.PillEntry.TABLE_NAME, newData,
                     DatabaseContract.PillEntry._ID + "=" + pillItem.getPillId(), null);
+
+        db.close();
         return pillItem.getPillId();
     }
 
@@ -142,6 +155,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
             c.moveToNext();
         }
 
+        database.close();
         return loadedItems;
     }
 
@@ -153,7 +167,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
         c.moveToFirst();
         AppointmentItem apptItem = appointmentItemFromCursor(c);
-
+        database.close();
         return apptItem;
     }
 
@@ -166,6 +180,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         c.moveToFirst();
         PillItem pillItem = pillItemFromCursor(c);
 
+        database.close();
         return pillItem;
     }
 
@@ -186,6 +201,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
             c.moveToNext();
         }
+        database.close();
 
         return pillItems;
     }
@@ -212,7 +228,10 @@ public class DatabaseManager extends SQLiteOpenHelper{
         colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_REFILL_DATE);
         long refillDate = c.getLong(colIndex);
 
-        newItem = new PillItem(title, instr, duration, untilDate, refillDate);
+        if(duration == -1)
+            newItem = new PillItem(title, instr, untilDate, refillDate);
+        else
+            newItem = new PillItem(title, instr, duration, refillDate);
 
         String[] dayDBContract = {
                 DatabaseContract.PillEntry.COLUMN_NAME_TIMES_S,
@@ -229,7 +248,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
         {
             colIndex = c.getColumnIndexOrThrow(dayDBContract[i]);
             String timesToTake = c.getString(colIndex);
-            if(timesToTake != null) {
+            if(timesToTake != null && !timesToTake.equals("")) {
                 String[] timesArray = timesToTake.split(",");
                 long[] timesAsLongs = new long[timesArray.length];
 
@@ -241,12 +260,10 @@ public class DatabaseManager extends SQLiteOpenHelper{
                 //Set the times for the item for that day
                 newItem.setTimesForDay(i, timesAsLongs);
             }
+
         }
-
         newItem.setPillId(pk);
-
         return newItem;
-
     }
 
     public List<PillItem> loadPillsForDay(int day)
@@ -298,6 +315,8 @@ public class DatabaseManager extends SQLiteOpenHelper{
             c.moveToNext();
         }
 
+        database.close();
+
         return pills;
 
     }
@@ -348,7 +367,6 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
         //set id and add to list
         newItem.setApptId(pk);
-
         return newItem;
     }
 
