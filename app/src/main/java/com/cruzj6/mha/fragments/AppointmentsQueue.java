@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.cruzj6.mha.models.AppointmentItem;
 import com.cruzj6.mha.R;
 import com.cruzj6.mha.dataManagement.DatabaseManager;
+import com.cruzj6.mha.models.ItemSettingsInvokeHandler;
+import com.cruzj6.mha.models.SettingsTypes;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,8 +31,8 @@ import java.util.List;
  * Use the {@link AppointmentsQueue#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AppointmentsQueue extends Fragment {
-    private static HorizontalScrollView scrollView;
+public class AppointmentsQueue extends Fragment implements ItemSettingsInvokeHandler{
+    private HorizontalScrollView scrollView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -48,8 +50,6 @@ public class AppointmentsQueue extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
@@ -60,9 +60,16 @@ public class AppointmentsQueue extends Fragment {
         //Inflate the view
         View theView =  inflater.inflate(R.layout.fragment_queue, container, false);
 
+        return theView;
+    }
+
+    private void buildAppointmentQueue()
+    {
+        View theView = getView();
+
         //Get the scrollview's linear layout
         LinearLayout apptsLayout = (LinearLayout) theView.findViewById(R.id.linearlayout_queue_scrollview);
-
+        apptsLayout.removeAllViews();
         //Get our appointment data from the database and go through each one
         List<AppointmentItem> apptsList = new DatabaseManager(getContext()).loadAppointmentItems();
         for(AppointmentItem item : apptsList)
@@ -78,7 +85,7 @@ public class AppointmentsQueue extends Fragment {
             Date date = new Date(item.getApptDate()*1000);
             SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy");
             itemDateLabel.setText(f.format(date));
-            f = new SimpleDateFormat("hh:mm aaa");
+            f.applyPattern("hh:mm aaa");
             itemTimeLabel.setText(f.format(date));
 
             //Set the title
@@ -90,8 +97,9 @@ public class AppointmentsQueue extends Fragment {
                 public void onClick(View v) {
                     //Give it the id of this item so it can get it from the db to edit
                     AppointmentSettingsDialog dialog = new AppointmentSettingsDialog();
+                    dialog.setOnSaveHandler(AppointmentsQueue.this);
                     Bundle args = new Bundle();
-                    args.putSerializable("mode", AppointmentSettingsDialog.SettingsTypes.EDIT_EXISTING);
+                    args.putSerializable("mode", SettingsTypes.EDIT_EXISTING);
                     args.putLong("id", apptItemFinal.getApptId());
                     dialog.setArguments(args);
                     dialog.show(((AppCompatActivity)getContext()).getSupportFragmentManager(), "Appointment Settings");
@@ -109,7 +117,7 @@ public class AppointmentsQueue extends Fragment {
                 c.setTime(date);
                 long timeAdd = item.getLabworkDaysBefore();
                 c.add(Calendar.DATE, -(int)timeAdd);
-                f = new SimpleDateFormat("MM/dd/yy");
+                f.applyPattern("MM/dd/yy");
 
                 //Set up the labwork label with this data
                 labworkLabel.setVisibility(View.VISIBLE);
@@ -119,15 +127,14 @@ public class AppointmentsQueue extends Fragment {
             //Finally add it to the layout
             apptsLayout.addView(layoutItem);
         }
-
-        return theView;
     }
+
 
     @Override
     public void onResume()
     {
         super.onResume();
-
+        buildAppointmentQueue();
 
     }
 
@@ -141,6 +148,11 @@ public class AppointmentsQueue extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemSaved() {
+        buildAppointmentQueue();
     }
 
     /**

@@ -23,12 +23,12 @@ public class MainActivity extends AppCompatActivity {
     final String TAG = "MainActivity";
 
     //View components
-    static FrameLayout apptFrame;
-    static Button pillBoxButton;
-    static Button appointmentsButton;
-    static Button refillButton;
-    static Button otherButton;
-    static ActionBar ab;
+    private FrameLayout apptFrame;
+    private Button pillBoxButton;
+    private Button appointmentsButton;
+    private Button refillButton;
+    private Button otherButton;
+    private ActionBar ab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

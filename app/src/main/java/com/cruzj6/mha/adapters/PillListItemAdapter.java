@@ -2,16 +2,23 @@ package com.cruzj6.mha.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.media.Image;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cruzj6.mha.R;
+import com.cruzj6.mha.fragments.PillSettingsDialog;
 import com.cruzj6.mha.helpers.TimeHelper;
+import com.cruzj6.mha.models.ItemSettingsInvokeHandler;
 import com.cruzj6.mha.models.PillItem;
+import com.cruzj6.mha.models.SettingsTypes;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -34,9 +41,12 @@ public class PillListItemAdapter extends RemovableItemListViewAdapter {
         final PillItem curItem = (PillItem) getItem(position);
 
         //Inflate and get view components
+
         LayoutInflater inf = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View pillItemView = inf.inflate(R.layout.listviewitem_pill, null);
-        LinearLayout notesLayout = (LinearLayout) pillItemView.findViewById(R.id.linearlayout_view_notes_layout);
+        View pillItemView = convertView;
+        if(pillItemView == null)
+            pillItemView = inf.inflate(R.layout.listviewitem_pill, null);
+        ImageButton notesBtn = (ImageButton) pillItemView.findViewById(R.id.button_show_item_notes);
         TextView titleTextView = (TextView) pillItemView.findViewById(R.id.textview_pill_title);
         TextView pillDaysTextView = (TextView) pillItemView.findViewById(R.id.textview_pill_days);
         TextView pillTimesToTake = (TextView) pillItemView.findViewById(R.id.textview_take_at_times);
@@ -51,37 +61,15 @@ public class PillListItemAdapter extends RemovableItemListViewAdapter {
 
         //Check which days to take it
         StringBuilder daysSb = new StringBuilder();
-        boolean diffTimes = false;
-        long[] lastDays = null;
+        boolean diffTimes = TimeHelper.checkSameTimesEachDay(curItem);
         long[] times = null;
-        long[] cacheTimes = null;
+        long[] cachedTimes = null;
         int numDays = 0;
         for(int i = 0; i < 7; i++)
         {
-            times = curItem.getTimesForDay(i);
-            if(times != null) {
+            if (curItem.getTimesForDay(i) != null) {
                 numDays++;
-
-                if(cacheTimes == null) cacheTimes = times;
-                //If we have not determined if these times differ yet, and we have something to compare
-                if(!diffTimes && lastDays != null)
-                {
-                    //If different amount of times they do have differing times per day
-                    if(lastDays.length != times.length)
-                    {
-                        diffTimes = true;
-                    }
-                    else {//If same amount check if they differ
-                        for (int j = 0; j < times.length; j++) {
-
-                            //These should be sorted
-                            if(!TimeHelper.compareUnixDateTimes(times[j], lastDays[j]))
-                            {
-                                diffTimes = true;
-                            }
-                        }
-                    }
-                }
+                cachedTimes = curItem.getTimesForDay(i);
 
                 //Switch to get the char for the day to show
                 switch (i) {
@@ -112,14 +100,13 @@ public class PillListItemAdapter extends RemovableItemListViewAdapter {
                         daysSb.append("Sa" + ",");
 
                         break;
-
                 }
-            }
 
-            lastDays = times;
+            }
         }
 
-        daysSb.deleteCharAt(daysSb.length() - 1);
+        if(daysSb.length() > 1) daysSb.deleteCharAt(daysSb.length() - 1);
+
         //Set the days to take text
         pillDaysTextView.setText(getContext()
                 .getString(R.string.take, (numDays == 7 ? "Every Day" : daysSb.toString())));
@@ -130,7 +117,7 @@ public class PillListItemAdapter extends RemovableItemListViewAdapter {
         //Build string with each time
         if(!diffTimes)
         {
-            for(long time : cacheTimes)
+            for(long time : cachedTimes)
             {
                 Date d = new Date((long)time*1000);
                 timesSb.append(f.format(d) + ", ");
@@ -142,11 +129,11 @@ public class PillListItemAdapter extends RemovableItemListViewAdapter {
         pillTimesToTake.setText(diffTimes ? "Times Differ Per Day" : timesSb.toString());
 
         //New instance with new format
-        f = new SimpleDateFormat("MM/dd/yy");
+        f.applyPattern("MM/dd/yy");
 
         refillByTextView.setText(getContext()
                 .getString(R.string.refill_by, f.format(new Date(curItem.getRefillDate()*1000))));
-        notesLayout.setOnClickListener(new View.OnClickListener() {
+        notesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -155,6 +142,19 @@ public class PillListItemAdapter extends RemovableItemListViewAdapter {
                 d.setTitle("Medication Notes");
                 d.setMessage(curItem.getInstr());
                 d.show();
+            }
+        });
+
+        pillItemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PillSettingsDialog psd = new PillSettingsDialog();
+                Bundle b = new Bundle();
+                b.putLong("id", curItem.getPillId());
+                b.putSerializable("mode", SettingsTypes.EDIT_EXISTING);
+                psd.setItemSettingsInvokeHandler((ItemSettingsInvokeHandler)getContext());
+                psd.setArguments(b);
+                psd.show(((AppCompatActivity)getContext()).getSupportFragmentManager(), "Pill Settings");
             }
         });
 

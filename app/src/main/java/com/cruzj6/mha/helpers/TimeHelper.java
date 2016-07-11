@@ -1,5 +1,7 @@
 package com.cruzj6.mha.helpers;
 
+import com.cruzj6.mha.models.PillItem;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,7 +27,7 @@ public final class TimeHelper {
         return time;
     }
 
-    public static boolean compareUnixDateTimes(long unix1, long unix2)
+    public static boolean compareUnixDatesTimes(long unix1, long unix2)
     {
         if(unix1 == unix2) return true;
         else
@@ -40,5 +42,40 @@ public final class TimeHelper {
             else return true;
         }
 
+    }
+
+    public static boolean checkSameTimesEachDay(PillItem item){
+        boolean diffTimes = false;
+        long[] lastDaysTimes = null;
+        long[] times = null;
+        long[] cacheTimes = null;
+        int numDays = 0;
+        for(int i = 0; i < 7; i++)
+        {
+            times = item.getTimesForDay(i);
+            if (times != null) {
+                numDays++;
+
+                if (cacheTimes == null) cacheTimes = times;
+                //If we have not determined if these times differ yet, and we have something to compare
+                if (!diffTimes && lastDaysTimes != null) {
+                    //If different amount of times they do have differing times per day
+                    if (lastDaysTimes.length != times.length) {
+                        diffTimes = true;
+                    } else {//If same amount check if they differ
+                        for (int j = 0; j < times.length; j++) {
+
+                            //These should be sorted
+                            if (!TimeHelper.compareUnixDatesTimes(times[j], lastDaysTimes[j])) {
+                                diffTimes = true;
+                            }
+                        }
+                    }
+                }
+            }
+            lastDaysTimes = times;
+        }
+
+        return !diffTimes;
     }
 }
