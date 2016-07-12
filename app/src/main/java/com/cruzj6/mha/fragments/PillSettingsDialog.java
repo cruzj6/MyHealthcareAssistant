@@ -31,6 +31,7 @@ import com.cruzj6.mha.R;
 import com.cruzj6.mha.adapters.DayEnabledHandler;
 import com.cruzj6.mha.adapters.PillTimesPerDayAdapter;
 import com.cruzj6.mha.dataManagement.DatabaseManager;
+import com.cruzj6.mha.helpers.NotificationItemsManager;
 import com.cruzj6.mha.helpers.TimeHelper;
 import com.cruzj6.mha.models.Days;
 import com.cruzj6.mha.models.ItemSettingsInvokeHandler;
@@ -232,7 +233,7 @@ public class PillSettingsDialog extends DialogFragment implements DatePickerDial
                     {
                         pillit.setTimesForDay(day, timesPerDay.get(day.getNumVal()));
                     }
-                    dbManager.savePill(pillit);
+                    NotificationItemsManager.createMedNotification(dbManager.savePill(pillit), getContext());
 
                     //Trigger handler method
                     handler.onItemSaved();
