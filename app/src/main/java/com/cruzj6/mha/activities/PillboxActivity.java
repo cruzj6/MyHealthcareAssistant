@@ -11,10 +11,27 @@ import com.cruzj6.mha.models.Days;
 
 public class PillboxActivity extends AppCompatActivity {
 
+    private Button mondayBtn;
+    private Button tuesdayBtn;
+    private Button wednesdayBtn;
+    private Button thursdayBtn;
+    private Button fridayBtn;
+    private Button saturdayBtn;
+    private Button sundayyBtn;
+    private Button allDaysBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pillbox);
+
+        mondayBtn = (Button)findViewById(R.id.button_day_m);
+        tuesdayBtn = (Button)findViewById(R.id.button_day_t);
+        wednesdayBtn = (Button)findViewById(R.id.button_day_w);
+        thursdayBtn = (Button)findViewById(R.id.button_day_r);
+        fridayBtn = (Button)findViewById(R.id.button_day_f);
+        saturdayBtn = (Button)findViewById(R.id.button_day_sa);
+        allDaysBtn = (Button)findViewById(R.id.button_day_s);
 
     }
 

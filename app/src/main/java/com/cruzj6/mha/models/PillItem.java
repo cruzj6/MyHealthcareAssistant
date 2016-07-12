@@ -22,6 +22,7 @@ public class PillItem extends RemovableItem {
     private long untilDate;
     private long refillDate;
     private List<long[]> timesPerDay = new ArrayList<>();
+    private TimesPerDayManager timesManager;
 
     private PillItem(String title, String instr, long refillDate)
     {
@@ -30,6 +31,7 @@ public class PillItem extends RemovableItem {
         this.instr = instr;
         for(int i = 0; i < 7; i++)
             timesPerDay.add(null);
+        timesManager = new TimesPerDayManager(timesPerDay);
     }
 
     public PillItem(String title, String instr, int duration, long refillDate)
@@ -110,5 +112,9 @@ public class PillItem extends RemovableItem {
     public boolean getIsEndByDate()
     {
         return duration == -1;
+    }
+    public TimesPerDayManager getTimesManager()
+    {
+        return timesManager;
     }
 }

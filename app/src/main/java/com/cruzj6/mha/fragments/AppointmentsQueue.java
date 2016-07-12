@@ -30,6 +30,8 @@ import java.util.List;
  * to handle interaction events.
  * Use the {@link AppointmentsQueue#newInstance} factory method to
  * create an instance of this fragment.
+ *
+ * Controls the Appointments queue scrolling view fragment on the dashboard (main activity)
  */
 public class AppointmentsQueue extends Fragment implements ItemSettingsInvokeHandler{
     private HorizontalScrollView scrollView;
