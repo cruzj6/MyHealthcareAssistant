@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class DatabaseManager extends SQLiteOpenHelper{
 
+    private final static String TAG = "DatabaseManager";
     public final static String DATABASE_NAME = "MedApp.db";
     public final static int DATABASE_VER = 1;
 
@@ -139,7 +140,7 @@ public class DatabaseManager extends SQLiteOpenHelper{
     //AppointmentItem's and return the list
     public List<AppointmentItem> loadAppointmentItems()
     {
-        List<AppointmentItem> loadedItems = new ArrayList<AppointmentItem>();
+        List<AppointmentItem> loadedItems = new ArrayList<>();
 
         //Get all of the rows in the table for appointments
         SQLiteDatabase database = getReadableDatabase();
@@ -149,8 +150,15 @@ public class DatabaseManager extends SQLiteOpenHelper{
         c.moveToFirst();
         while(!c.isAfterLast())
         {
-            AppointmentItem newItem = appointmentItemFromCursor(c);
-            loadedItems.add(newItem);
+            try {
+                AppointmentItem newItem = appointmentItemFromCursor(c);
+                loadedItems.add(newItem);
+            }
+            catch(IllegalArgumentException e)
+            {
+                Log.e(TAG, "Could not load appointment from DB: loadAppointmentItems(): \n" + e.getMessage());
+                e.printStackTrace();
+            }
 
             c.moveToNext();
         }
@@ -178,10 +186,19 @@ public class DatabaseManager extends SQLiteOpenHelper{
                 + " WHERE " + DatabaseContract.PillEntry._ID + "=" + id, null);
 
         c.moveToFirst();
-        PillItem pillItem = pillItemFromCursor(c);
+        try {
+            PillItem pillItem = pillItemFromCursor(c);
+            database.close();
+            return pillItem;
+        }
+        catch(IllegalArgumentException e)
+        {
+            Log.e(TAG, "Could not load pillItem from DB: loadPillItemById(): \n" + e.getMessage());
+            e.printStackTrace();
+        }
 
         database.close();
-        return pillItem;
+        return null;
     }
 
     public List<PillItem> loadPillItems()
@@ -196,8 +213,15 @@ public class DatabaseManager extends SQLiteOpenHelper{
         c.moveToFirst();
         while(!c.isAfterLast())
         {
-            PillItem newItem = pillItemFromCursor(c);
-            pillItems.add(newItem);
+            try {
+                PillItem newItem = pillItemFromCursor(c);
+                pillItems.add(newItem);
+            }
+            catch(IllegalArgumentException e)
+            {
+                Log.e(TAG, "Could not load PillItem from DB: loadPillItems(): \n" + e.getMessage());
+                e.printStackTrace();
+            }
 
             c.moveToNext();
         }
@@ -310,8 +334,15 @@ public class DatabaseManager extends SQLiteOpenHelper{
         c.moveToFirst();
         while(!c.isAfterLast())
         {
-            PillItem pillItem = pillItemFromCursor(c);
-            pills.add(pillItem);
+            try {
+                PillItem pillItem = pillItemFromCursor(c);
+                pills.add(pillItem);
+            }
+            catch(IllegalArgumentException e)
+            {
+                Log.e(TAG, "Could not load PillItem from DB: loadPillsForDay(): \n" + e.getMessage());
+                e.printStackTrace();
+            }
             c.moveToNext();
         }
 

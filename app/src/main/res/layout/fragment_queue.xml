@@ -5,6 +5,7 @@
     tools:context=".fragments.AppointmentsQueue">
 
     <HorizontalScrollView
+        android:background="@color/colorAccent"
         android:scrollbars="none"
         android:id="@+id/scrollview_appts_queue"
         android:layout_width="match_parent"

@@ -13,6 +13,7 @@
 
     <!--TODO: This is staging URL-->
     <string name="walgreen_api_url">https://services-qa.walgreens.com/api/util/mweb5url</string>
+    <!--string name="walgreen_api_url">https://services.walgreens.com/api/util/mweb5url</string-->
     <string name="walgreens_api_key">HyF1AbSuDGSX0fW5AdeqNTmdWpiUBa5F</string>
     <string name="walgreens_affid">hlthassist</string>
 

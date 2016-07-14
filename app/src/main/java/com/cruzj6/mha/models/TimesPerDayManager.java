@@ -1,6 +1,7 @@
 package com.cruzj6.mha.models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,12 +15,15 @@ public class TimesPerDayManager {
 
     public TimesPerDayManager(List<long[]> timesPerDay)
     {
-        timesPerDay = new ArrayList<>();
-        for(int i = 0; i < timesPerDay.size(); i++)
+        this.timesPerDay = new ArrayList<>();
+        for(int i = 0; i < 7; i++)
         {
             this.timesPerDay
                     .add(new TimesPerDayManagerItem(Days.values()[i], timesPerDay.get(i)));
         }
+
+        //Sort by day
+        Collections.sort(this.timesPerDay);
     }
 
     public List<TimesPerDayManagerItem> getTimesPerDay()

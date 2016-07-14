@@ -233,7 +233,8 @@ public class PillSettingsDialog extends DialogFragment implements DatePickerDial
                     {
                         pillit.setTimesForDay(day, timesPerDay.get(day.getNumVal()));
                     }
-                    NotificationItemsManager.createMedNotification(dbManager.savePill(pillit), getContext());
+                    long pillId = dbManager.savePill(pillit);
+                    NotificationItemsManager.createMedNotification(pillId, getContext());
 
                     //Trigger handler method
                     handler.onItemSaved();

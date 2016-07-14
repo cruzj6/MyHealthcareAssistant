@@ -15,6 +15,7 @@ import com.cruzj6.mha.models.ItemSettingsInvokeHandler;
 import com.cruzj6.mha.models.PillItem;
 import com.cruzj6.mha.models.SettingsTypes;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -70,6 +71,8 @@ public class PillListActivity extends ListActivity implements ItemSettingsInvoke
             pillsList = new DatabaseManager(this).loadPillsForDay(day);
         else
             pillsList = new DatabaseManager(this).loadPillItems();
+
+        Collections.sort(pillsList);
 
         //Set up adapter with the list
         adapter = new PillListItemAdapter(this, 0, pillsList);
