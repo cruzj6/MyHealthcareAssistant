@@ -6,11 +6,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -40,6 +43,9 @@ public class RefillWebViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_refill_web_view);
 
+        Intent intent = getIntent();
+        final String rxNum = intent.getExtras().getString("num");
+
         myProgressBar = ProgressDialog.show(RefillWebViewActivity.this, "Walgreens Rx",
                 "Please wait...");
 
@@ -49,7 +55,7 @@ public class RefillWebViewActivity extends AppCompatActivity {
         webview.setWebViewClient(new WebViewController());
         webview.setVisibility(View.VISIBLE);
 
-        /*webview.setWebChromeClient(new WebChromeClient() {
+        webview.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin,
                                                            android.webkit.GeolocationPermissions.Callback callback) {
@@ -78,12 +84,12 @@ public class RefillWebViewActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(WebView view, int progress) {
-                customWebView.setTitle("Loading screen title");
+                customWebView.setTitle("Rx Refill");
                 customWebView.setProgress(progress * 100);
                 if (progress == 100)
                     customWebView.setTitle(R.string.app_name);
             }
-        });*/
+        });
 
 
         WalgreensRequestManager.requestLandingURL(this, new Response.Listener<WalLandingRespContainer>() {
@@ -102,14 +108,14 @@ public class RefillWebViewActivity extends AppCompatActivity {
                     jsonObject.put("appver", "1.0");
                     jsonObject.put("act", "chkExpRx");
                     jsonObject.put("appId", "refillByScan");
-                    jsonObject.put("rxNo", "0373127-59382");
+                    jsonObject.put("rxNo", rxNum);
                     jsonObject.put("appCallBackScheme", "refillbyscan://handleControl");
                     jsonObject.put("appCallBackAction", "callBackAction");
                     jsonObject.put("trackingId",
                             String.valueOf(System.currentTimeMillis() / 1000L));
                     try {
                         //TODO: please be their end...
-                        webview.postUrl(response.getUrl(), jsonObject.toString().getBytes());
+                        webview.postUrl(response.getUrl(), jsonObject.toString().getBytes("UTF8"));
                     } catch (Exception e) {
                         e.printStackTrace();
                     };

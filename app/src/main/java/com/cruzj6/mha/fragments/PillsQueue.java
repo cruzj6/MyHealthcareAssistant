@@ -25,6 +25,7 @@ import com.cruzj6.mha.models.TimesPerDayManagerItem;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -58,20 +59,16 @@ public class PillsQueue extends Fragment implements ItemSettingsInvokeHandler{
             LinearLayout pillsLayout = (LinearLayout) getView().findViewById(R.id.linearlayout_queue_scrollview);
 
             List<PillItem> pillItems = new DatabaseManager(getContext()).loadPillItems();
+
+            //Sort by which one has date first
+            Collections.sort(pillItems);
             for (final PillItem pillItem : pillItems) {
                 View pillQItem = getActivity().getLayoutInflater().inflate(R.layout.layout_pill_queue_item, null);
                 TextView titleTextView = (TextView) pillQItem.findViewById(R.id.textview_pillq_item_title);
                 TextView nextTakeTextView = (TextView) pillQItem.findViewById(R.id.textview_pillq_item_time);
                 StringBuilder sb = new StringBuilder();
-                sb.append("Take Next: ");
-                
-                //TODO: TimesPerDayManager get sort by time info
-                Date nowDate = new Date();
-                TimesPerDayManager timesManager = pillItem.getTimesManager();
-                for(TimesPerDayManagerItem item : timesManager.getTimesPerDay())
-                {
-                    //Order by closest to today's date
-                }
+                sb.append("Take On: ");
+
                 pillQItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -85,6 +82,19 @@ public class PillsQueue extends Fragment implements ItemSettingsInvokeHandler{
                     }
                 });
 
+                //Now build our data to show to the user
+                for(TimesPerDayManagerItem item : pillItem.getTimesManager().getTimesPerDay())
+                {
+                    //If there are times for that day add it to string
+                    if(item.getTimesList().size() > 0)
+                    {
+                        sb.append(item.getDay().getStringName().charAt(0));
+                        sb.append(item.getDay().getStringName().charAt(1));
+                        sb.append(",");
+                    }
+                }
+                sb.deleteCharAt(sb.length() - 1);
+                nextTakeTextView.setText(sb.toString());
                 titleTextView.setText(pillItem.getTitle());
                 pillsLayout.addView(pillQItem);
             }

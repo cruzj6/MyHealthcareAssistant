@@ -35,10 +35,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Set AB Title
-        ab = getSupportActionBar();
-        ab.setTitle(R.string.dashboard_header_string);
-
         //Get button hanldes
         appointmentsButton = (Button) findViewById(R.id.appointments_btn);
         pillBoxButton = (Button) findViewById(R.id.pillBox_btn);
