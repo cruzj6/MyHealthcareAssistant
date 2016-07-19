@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Created by Joey on 5/23/16.
+ * Class for managing the database of appointments and medication using the DatabaseContract
  */
 public class DatabaseManager extends SQLiteOpenHelper{
 
@@ -28,6 +29,9 @@ public class DatabaseManager extends SQLiteOpenHelper{
         super(context, DATABASE_NAME, null, DATABASE_VER);
     }
 
+    /**
+     * Removes an Appointment from the database
+     */
     public void deleteAppointment(long apptId)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -37,6 +41,10 @@ public class DatabaseManager extends SQLiteOpenHelper{
         db.close();
     }
 
+    /**
+     * Removes a pill from the database
+     * @param pillId
+     */
     public void deletePill(long pillId)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -45,6 +53,11 @@ public class DatabaseManager extends SQLiteOpenHelper{
         db.close();
     }
 
+    /**
+     * Adds(if no id in AppointmentItem) or modifies an appointment in the database
+     * @param apptItem
+     * @return the appointment's id
+     */
     public long saveAppointment(AppointmentItem apptItem)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -69,6 +82,11 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return apptItem.getApptId();
     }
 
+    /**
+     *Adds(If id in pillItem) or modifies a medication in the database
+     * @param pillItem
+     * @return id of the medication
+     */
     public long savePill(PillItem pillItem)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -136,8 +154,11 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return pillItem.getPillId();
     }
 
-    //Load items from the appointments table in to database into
-    //AppointmentItem's and return the list
+    /**
+     *Load items from the appointments table in to database into
+     * AppointmentItem's and return the list
+     * @return list of all AppointmentItems in DB
+     */
     public List<AppointmentItem> loadAppointmentItems()
     {
         List<AppointmentItem> loadedItems = new ArrayList<>();
@@ -167,6 +188,11 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return loadedItems;
     }
 
+    /**
+     * Gets the AppointmentItem of the appointment with the given id
+     * @param id
+     * @return The AppointmentItem for the appointment with the id
+     */
     public AppointmentItem loadAppointmentById(Long id)
     {
         SQLiteDatabase database = getReadableDatabase();
@@ -179,6 +205,11 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return apptItem;
     }
 
+    /**
+     * Loads a pillItem from DB by its id
+     * @param id
+     * @return loaded PillItem
+     */
     public PillItem loadPillItemById(long id)
     {
         SQLiteDatabase database = getReadableDatabase();
@@ -201,6 +232,10 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return null;
     }
 
+    /**
+     * Loads all PillItems(Medications) from the database
+     * @return list of PillItems for all medications in the database
+     */
     public List<PillItem> loadPillItems()
     {
         List<PillItem> pillItems = new ArrayList<>();
@@ -290,6 +325,11 @@ public class DatabaseManager extends SQLiteOpenHelper{
         return newItem;
     }
 
+    /**
+     * Load all of the medications for a specific day
+     * @param day
+     * @return List of PillItems for the specified day
+     */
     public List<PillItem> loadPillsForDay(int day)
     {
         List<PillItem> pills = new ArrayList<>();

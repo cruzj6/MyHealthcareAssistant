@@ -11,7 +11,9 @@ public final class DatabaseContract {
 
     }
 
-    //Contract with the database for each appointment row
+    /**
+     *Contract with the database for each appointment row
+     */
     public static abstract class AppointmentEntry implements BaseColumns
     {
         public static final String TABLE_NAME = "appointments";
@@ -24,7 +26,9 @@ public final class DatabaseContract {
 
     }
 
-    //Contract with the database for each pill row
+    /**
+     *     Contract with the database for each pill row
+     */
     public static abstract class PillEntry implements BaseColumns
     {
         //Basic info

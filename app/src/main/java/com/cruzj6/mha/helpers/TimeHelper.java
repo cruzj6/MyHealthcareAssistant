@@ -8,6 +8,7 @@ import java.util.Date;
 
 /**
  * Created by Joey on 6/6/16.
+ * Convinience methods for managing unix times from the database
  */
 public final class TimeHelper {
 

@@ -137,6 +137,11 @@ public final class NotificationItemsManager extends BroadcastReceiver {
         }
     }
 
+    /**
+     * Create an appointment alarm to be sent with pending intent
+     * @param apptItemId id of appt to create alarms for
+     * @param context
+     */
     public static void createApptNotification(long apptItemId, Context context)
     {
         AppointmentItem apptItem = new DatabaseManager(context).loadAppointmentById(apptItemId);
