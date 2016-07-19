@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * Created by Joey on 7/11/16.
+ * Used to store times in a more useful, readable fashion by TimeManagerItem's
  */
 public class SimpleTimeItem implements Comparable<SimpleTimeItem>, Serializable {
     private int hour24;

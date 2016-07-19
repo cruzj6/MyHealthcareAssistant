@@ -15,32 +15,35 @@
         android:layout_alignParentStart="true">
 
         <LinearLayout
-            android:background="@color/colorPrimary"
+            android:background="@drawable/back_gradient_gray"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <ImageView
-                android:background="@color/colorPrimary"
+                android:background="@drawable/back_gradient_gray"
                 android:src="@drawable/ic_home_icon_24dp"
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:contextClickable="true" />
 
             <LinearLayout
+                android:layout_gravity="center_horizontal"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TextView
+                android:fontFamily="sans-serif"
+                android:layout_marginEnd="50dp"
                 android:textColor="@android:color/white"
-                android:textStyle="bold"
                 android:textAlignment="center"
                 android:textSize="25dp"
                 android:text="My Healthcare"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <TextView
+                android:fontFamily="sans-serif"
+                android:layout_marginEnd="50dp"
                 android:textColor="@android:color/white"
-                android:textStyle="bold"
                 android:textAlignment="center"
                 android:textSize="25dp"
                 android:text="Assistant"
@@ -84,11 +87,11 @@
                 android:layout_height="0dp">
 
                 <Button
+                    android:textSize="16sp"
                     android:drawableLeft="@drawable/ic_stethescope"
                     android:textColor="@android:color/white"
                     android:elevation="15dp"
                     android:text="Appointments"
-                    android:textStyle="bold"
                     android:backgroundTint="@color/colorPrimary"
                     android:id="@+id/appointments_btn"
                     android:contentDescription="@string/placeholder"
@@ -96,13 +99,10 @@
                     android:layout_width="0dp"
                     android:layout_weight="0.5"
                     android:layout_height="match_parent" />
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="match_parent" />
 
                 <Button
+                    android:textSize="16sp"
                     android:drawableLeft="@drawable/ic_pill"
-                    android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:elevation="15dp"
                     android:text="PillBox"
@@ -125,8 +125,8 @@
 
                 <Button
                     android:drawableLeft="@drawable/ic_home_icon_24dp"
-                    android:textStyle="bold"
                     android:textColor="@android:color/white"
+                    android:textSize="16sp"
                     android:elevation="15dp"
                     android:backgroundTint="@color/colorPrimary"
                     android:text="Refill Rx (Walgreens)"
@@ -136,12 +136,9 @@
                     android:layout_width="0dp"
                     android:layout_weight="5"
                     android:layout_height="match_parent" />
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="match_parent" />
                 <Button
+                    android:textSize="16sp"
                     android:drawableLeft="@drawable/ic_assignment_late_white_24dp"
-                    android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:elevation="15dp"
                     android:text="Missed Pills Log"
@@ -177,6 +174,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/imageView" /-->
                 <TextView
+                    android:textStyle="bold"
                     android:paddingStart="5dp"
                     android:paddingEnd="10dp"
                     android:layout_gravity="center_vertical"
@@ -228,6 +226,7 @@
                 android:background="@color/colorPrimary"
                 android:id="@+id/imageView2" /-->
             <TextView
+                android:textStyle="bold"
                 android:paddingStart="5dp"
                 android:paddingEnd="10dp"
                 android:layout_gravity="center_vertical"

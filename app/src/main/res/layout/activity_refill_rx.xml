@@ -16,6 +16,8 @@
         android:layout_height="wrap_content" />
     <EditText
         android:hint="Enter Rx Number..."
+        android:inputType="number"
+        android:digits="0123456789-"
         android:id="@+id/edittext_rx_num"
         android:singleLine="true"
         android:layout_width="match_parent"
@@ -24,15 +26,46 @@
         android:layout_width="1dp"
         android:layout_height="20dp" />
     <TextView
-        android:text="Zip Code"
+        android:layout_marginBottom="5dp"
+        android:text="@string/pickup_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <EditText
-        android:hint="Enter Zip Code..."
-        android:singleLine="true"
+    <RadioGroup
+        android:id="@+id/radiogroup_location"
+        android:paddingBottom="5dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:paddingTop="5dp"
+        android:background="@drawable/round_num_box_background"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/edittext_zip_code"/>
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/radio_location_gps"
+            android:checked="true"
+            android:text="@string/current_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RadioButton
+            android:id="@+id/radio_location_zip"
+            android:text="@string/zip_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <!--TextView
+            android:text="Zip Code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" /-->
+
+        <EditText
+            android:inputType="number"
+            android:hint="@string/enter_zip_code"
+            android:singleLine="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edittext_zip_code"/>
+
+    </RadioGroup>
+
     <Space
         android:layout_width="1dp"
         android:layout_height="20dp" />
@@ -40,6 +73,7 @@
         android:backgroundTint="@color/colorPrimary"
         android:id="@+id/button_submit_wgapi"
         android:text="Submit"
+        android:textColor="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

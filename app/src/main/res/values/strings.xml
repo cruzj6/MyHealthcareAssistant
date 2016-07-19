@@ -56,4 +56,11 @@
     <string name="select_date">Select Date</string>
     <string name="set_end_date">Set End Date</string>
     <string name="n_a">N/A</string>
+    <string name="enter_zip_code">Enter Zip Code...</string>
+    <string name="zip_code">Zip Code</string>
+    <string name="pickup_location">Pickup Location</string>
+    <string name="current_location">Current Location</string>
+    <string name="loc_not_enabled">Location Services not Enabled. Please use zip code or enable location services on your device.</string>
+    <string name="enable_loc">Enable Services</string>
+    <string name="cancel_loc">Cancel</string>
 </resources>
