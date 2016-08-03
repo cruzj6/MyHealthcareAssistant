@@ -16,6 +16,7 @@ import com.cruzj6.mha.models.AppointmentItem;
 import com.cruzj6.mha.models.ItemSettingsInvokeHandler;
 import com.cruzj6.mha.models.SettingsTypes;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AppointmentsActivity extends ListActivity implements ItemSettingsInvokeHandler {
@@ -63,6 +64,7 @@ public class AppointmentsActivity extends ListActivity implements ItemSettingsIn
     {
         //Load from the database
         apptItems = dbm.loadAppointmentItems();
+        Collections.sort(apptItems);
 
         //Set up the adapter
         apptAdapter = new AppointmentsListViewAdapter(this, 0, apptItems);

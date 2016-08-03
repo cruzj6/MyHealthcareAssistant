@@ -34,8 +34,8 @@ public final class TimeHelper {
         else
         {
             SimpleDateFormat f = new SimpleDateFormat("hh:mm aaa");
-            Date d1 = new Date(unix1);
-            Date d2 = new Date(unix2);
+            Date d1 = new Date(unix1*1000);
+            Date d2 = new Date(unix2*1000);
             long h1, m1, s1;
             String str1 = f.format(d1);
             String str2 = f.format(d2);

@@ -178,46 +178,7 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        String title = apptTitleEditText.getText().toString();
-                        String notes = notesEditText.getText().toString();
-                        long apptDate = setUnixDate;
-                        long remindDaysBefore =
-                                remindDaysCheckbox.isChecked() ?
-                                        Long.parseLong(remindDaysEditText.getText().toString()) : 0;
-
-                        //Check if we need labwork object or not
-                        AppointmentItem apptItem = null;
-                        if(requiresLabworkCheckbox.isChecked())
-                        {
-                            long labworkTime = Long.parseLong(labworkEditText.getText().toString());
-                            //long labworkTime = labworkNumberPicker.getValue();
-                            apptItem = new AppointmentItem(title, apptDate, remindDaysBefore, notes, labworkTime);
-                        }
-                        else
-                        {
-                            apptItem = new AppointmentItem(title, apptDate, remindDaysBefore, notes);
-                        }
-
-                        //If we are editing an existing one, tack on the ID
-                        if(mode == SettingsTypes.EDIT_EXISTING) {
-                            apptItem.setApptId(itemId);
-                        }
-
-                        //Push it into the database
-                        long apptItemId = new DatabaseManager(getContext()).saveAppointment(apptItem);
-
-                        //Notification setup
-                        NotificationItemsManager.createApptNotification(apptItemId, getContext());
-
-                        //Make toast
-                        String toastString = mode == SettingsTypes.EDIT_EXISTING ? "Appointment Changes Saved" :
-                                (mode == SettingsTypes.NEW_ITEM ? "Appointment Added" : "Saved");
-                        Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
-
-                        //Trigger reload or whatever handler chooses to do
-                        if(handler != null)
-                            handler.onItemSaved();
-
+                       //This is hijacked below
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -226,7 +187,70 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
                     }
                 });
 
-        Dialog d = builder.create();
+        final AlertDialog d = builder.create();
+
+        d.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
+                b.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        String title = apptTitleEditText.getText().toString();
+                        String notes = notesEditText.getText().toString();
+
+                        if(title.replaceAll("\\s+","").equals(""))
+                        {
+                            Toast t =
+                                    Toast.makeText(getContext(),
+                                            "Please Enter a Name\nFor the Appointment", Toast.LENGTH_SHORT);
+                            t.show();
+                        }
+                        else {
+                            long apptDate = setUnixDate;
+                            long remindDaysBefore =
+                                    remindDaysCheckbox.isChecked() ?
+                                            Long.parseLong(remindDaysEditText.getText().toString()) : 0;
+
+                            //Check if we need labwork object or not
+                            AppointmentItem apptItem = null;
+                            if (requiresLabworkCheckbox.isChecked()) {
+                                long labworkTime = Long.parseLong(labworkEditText.getText().toString());
+                                //long labworkTime = labworkNumberPicker.getValue();
+                                apptItem = new AppointmentItem(title, apptDate, remindDaysBefore, notes, labworkTime);
+                            } else {
+                                apptItem = new AppointmentItem(title, apptDate, remindDaysBefore, notes);
+                            }
+
+                            //If we are editing an existing one, tack on the ID
+                            if (mode == SettingsTypes.EDIT_EXISTING) {
+                                apptItem.setApptId(itemId);
+                            }
+
+                            //Push it into the database
+                            long apptItemId = new DatabaseManager(getContext()).saveAppointment(apptItem);
+
+                            //Notification setup
+                            NotificationItemsManager.createApptNotification(apptItemId, getContext());
+
+                            //Make toast
+                            String toastString = mode == SettingsTypes.EDIT_EXISTING ? "Appointment Changes Saved" :
+                                    (mode == SettingsTypes.NEW_ITEM ? "Appointment Added" : "Saved");
+                            Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+
+                            //Trigger reload or whatever handler chooses to do
+                            if (handler != null)
+                                handler.onItemSaved();
+
+                            d.dismiss();
+                        }
+                    }
+                });
+            }
+        }
+        );
         d.setCanceledOnTouchOutside(false);
         return d;
     }

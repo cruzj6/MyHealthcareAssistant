@@ -24,7 +24,7 @@ public class TimesPerDayManagerItem implements Comparable<TimesPerDayManagerItem
         this.timesList = new ArrayList<>();
         if(times != null) {
             for (long time : times) {
-                d.setTime(time);
+                d.setTime(time*1000);
                 SimpleDateFormat f = new SimpleDateFormat();
                 f.applyPattern("HH");
                 int hours = Integer.parseInt(f.format(d));

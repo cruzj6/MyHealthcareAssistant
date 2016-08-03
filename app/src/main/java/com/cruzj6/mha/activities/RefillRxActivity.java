@@ -16,6 +16,8 @@ import android.location.LocationManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +30,8 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.cruzj6.mha.R;
 import com.cruzj6.mha.dataManagement.WalLandingRespContainer;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -42,6 +46,8 @@ public class RefillRxActivity extends AppCompatActivity {
 
     private final static int GPS_TIMEOUT_MS = 10000;
     private final static int GPS_REQ_CODE = 3;
+    private final static int CAM_REQ_CODE = 4;
+    private WalgreensLocationListener locListener;
     private final String TAG = "RefillRxActivity";
     private Button submitWalReqBtn;
     private EditText rxNumEditText;
@@ -49,26 +55,58 @@ public class RefillRxActivity extends AppCompatActivity {
     private ProgressDialog pd;
     private RadioGroup rgLoc;
     private Timer timerGetLocation;
+    private Button scanRxButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_refill_rx);
 
-        //get refs to controls
+        //gets refs to controls
         rxNumEditText = (EditText) findViewById(R.id.edittext_rx_num);
         locationEditText = (EditText) findViewById(R.id.edittext_zip_code);
-        rgLoc = (RadioGroup)findViewById(R.id.radiogroup_location);
+        rgLoc = (RadioGroup) findViewById(R.id.radiogroup_location);
         submitWalReqBtn = (Button) findViewById(R.id.button_submit_wgapi);
+        scanRxButton = (Button) findViewById(R.id.button_scan_rx);
+
+        //Sets up button for scanning Rx barcode
+        scanRxButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int permissionCheck = ContextCompat.checkSelfPermission(RefillRxActivity.this,
+                        Manifest.permission.CAMERA);
+
+                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                    // Should we show an explanation?
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(RefillRxActivity.this,
+                            Manifest.permission.CAMERA)) {
+
+                        // No explanation needed, we can request the permission.
+                        ActivityCompat.requestPermissions(RefillRxActivity.this,
+                                new String[]{Manifest.permission.CAMERA},
+                                CAM_REQ_CODE);
+
+                    } else {
+
+                        // No explanation needed, we can request the permission.
+                        ActivityCompat.requestPermissions(RefillRxActivity.this,
+                                new String[]{Manifest.permission.CAMERA},
+                                CAM_REQ_CODE);
+                    }
+                }
+
+                //Initiate bar code scanning
+                else new IntentIntegrator(RefillRxActivity.this).initiateScan();
+            }
+        });
 
         rgLoc.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.radio_location_zip)
-                {
+                if (checkedId == R.id.radio_location_zip) {
                     locationEditText.setEnabled(true);
-                }
-                else
+                } else
                     locationEditText.setEnabled(false);
             }
         });
@@ -86,10 +124,10 @@ public class RefillRxActivity extends AppCompatActivity {
                     }
                 };
 
+                int id = rgLoc.getCheckedRadioButtonId();
                 //User wants to use current location
-                switch(rgLoc.getCheckedRadioButtonId()) {
+                switch (id) {
                     case R.id.radio_location_gps:
-                    {
                         //Easier to ref
                         final Context context = RefillRxActivity.this;
 
@@ -131,9 +169,8 @@ public class RefillRxActivity extends AppCompatActivity {
                             dialog.show();
                         } else //We have services, check permissions
                             checkPermissionGPSAndStartWalgreens();
-                    }
+                        break;
                     case R.id.radio_location_zip:
-                    {
                         final Geocoder geocoder = new Geocoder(RefillRxActivity.this);
                         final String zip = locationEditText.getText().toString();
                         try {
@@ -149,12 +186,12 @@ public class RefillRxActivity extends AppCompatActivity {
                                 startActivity(webIntent);
                             } else {
                                 // Display appropriate message when Geocoder services are not available
-                                Toast.makeText(RefillRxActivity.this, "Unable to geocode zipcode", Toast.LENGTH_LONG).show();
+                                Toast.makeText(RefillRxActivity.this, R.string.cant_geocode_msg, Toast.LENGTH_LONG).show();
                             }
                         } catch (IOException e) {
                             // handle exception
                         }
-                    }
+                        break;
                     default:
                         Log.e(TAG, "Programming Error: No radio id case");
                 }
@@ -162,10 +199,25 @@ public class RefillRxActivity extends AppCompatActivity {
         });
     }
 
+    // Get the results From barcode scan
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                rxNumEditText.setText(result.getContents());
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     /**
      * Checks Location permissions, and calls startWalgreensWithGPS() if granted
      */
-    private void checkPermissionGPSAndStartWalgreens(){
+    private void checkPermissionGPSAndStartWalgreens() {
         //Check our permissions for user locationed
         if (ActivityCompat
                 .checkSelfPermission(RefillRxActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -184,8 +236,7 @@ public class RefillRxActivity extends AppCompatActivity {
      * Start listening for location updates, and start walgreens webview activity once  one is recieved,
      * DO NOT CALL THIS METHOD WITHOUT FIRST GETTING LOCATION PERMISSIONS
      */
-    private void startWalgreensWithGPS()
-    {
+    private void startWalgreensWithGPS() {
         //Start listening for location, and provide it in intent bundle
         final LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -195,13 +246,14 @@ public class RefillRxActivity extends AppCompatActivity {
         //Show user we're getting the location
         pd = new ProgressDialog(this);
         pd.setTitle("Getting Location");
+        pd.setCanceledOnTouchOutside(false);
         pd.show();
 
         try {
             //Request Location updates
             final String bestProvider = lm.getBestProvider(new Criteria(), true);
-            final WalgreensLocationListener locListener = new WalgreensLocationListener(webIntent);
-            lm.requestLocationUpdates(bestProvider, 0, 0, locListener);
+            locListener = new WalgreensLocationListener(webIntent);
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locListener);
 
             //Init the timer fresh
             timerGetLocation = new Timer();
@@ -217,27 +269,23 @@ public class RefillRxActivity extends AppCompatActivity {
                             public void run() {
                                 pd.dismiss();
                                 AlertDialog aTimeOut = new AlertDialog.Builder(RefillRxActivity.this).create();
-                                aTimeOut.setTitle("Timeout");
-                                aTimeOut.setMessage("Timeout getting location: Please use zip code, or try again");
+                                aTimeOut.setTitle(getString(R.string.timeout));
+                                aTimeOut.setMessage(getString(R.string.timeout_loc_message));
                                 aTimeOut.show();
                             }
                         });
-                    }
-                    catch(SecurityException e)
-                    {
+                    } catch (SecurityException e) {
                         e.printStackTrace();
                     }
                 }
             }, GPS_TIMEOUT_MS);
-        }
-        catch(SecurityException e)
-        {
+        } catch (SecurityException e) {
             Log.e(TAG, "Programming Error, Should have permissions");
 
             //Alert the user about the error
             final AlertDialog ad = new AlertDialog.Builder(RefillRxActivity.this).create();
             ad.setTitle("Error");
-            ad.setMessage("Error: Could Not Get Location!");
+            ad.setMessage(getString(R.string.cant_get_location));
             ad.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -248,6 +296,45 @@ public class RefillRxActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if(timerGetLocation != null) {
+            //Cancel the timer to avoid error when user hits back while it's getting location
+            timerGetLocation.cancel();
+            timerGetLocation.purge();
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onPause() {
+        if(locListener != null && ContextCompat.checkSelfPermission(RefillRxActivity.this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(RefillRxActivity.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            //Pause location listening for battery
+            LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+            lm.removeUpdates(locListener);
+        }
+
+        super.onPause();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if(locListener != null&& ContextCompat.checkSelfPermission(RefillRxActivity.this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(RefillRxActivity.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locListener);
+        }
+    }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
@@ -256,6 +343,13 @@ public class RefillRxActivity extends AppCompatActivity {
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 startWalgreensWithGPS();
+            }
+        }
+        else if(requestCode == CAM_REQ_CODE)
+        {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                new IntentIntegrator(RefillRxActivity.this).initiateScan();
             }
         }
     }

@@ -165,17 +165,7 @@ public class RefillWebViewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (webview.getVisibility() == View.VISIBLE) {
-            if (webview.canGoBack()) {
-                webview.loadUrl("javascript:dismissCalendar();");
-                webview.loadUrl("javascript:nativeBackBtnClicked();");
-            } else {
-                Intent intent = new Intent(RefillWebViewActivity.this,
-                        MainActivity.class);
-                RefillWebViewActivity.this.startActivity(intent);
-                finish();
-            }
-        }
+       closeWB();
     }
 
     private void closeWB() {
@@ -224,7 +214,8 @@ public class RefillWebViewActivity extends AppCompatActivity {
 
                     closeWB();
                     return false;
-                } else {
+                }
+                else {
                     view.loadUrl(url);
                     return true;
                 }

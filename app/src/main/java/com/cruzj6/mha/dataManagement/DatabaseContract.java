@@ -50,4 +50,12 @@ public final class DatabaseContract {
         public static final String COLUMN_NAME_UNTIL_DATE = "untildate";
         public static final String COLUMN_NAME_REFILL_DATE = "refilldate";
     }
+
+    public static abstract class MissedPillEntry implements BaseColumns
+    {
+        public static final String TABLE_NAME = "missedpills";
+
+        public static final String COLUMN_NAME_PILL_NAME = "name";
+        public static final String COLUMN_NAME_TIME_MISSED = "timemissed";
+    }
 }

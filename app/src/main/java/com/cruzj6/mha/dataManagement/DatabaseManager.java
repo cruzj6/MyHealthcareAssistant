@@ -8,11 +8,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.ContactsContract;
 import android.util.Log;
 
+import com.cruzj6.mha.helpers.NotificationItemsManager;
 import com.cruzj6.mha.models.AppointmentItem;
 import com.cruzj6.mha.models.Days;
+import com.cruzj6.mha.models.MissedPillContainer;
 import com.cruzj6.mha.models.PillItem;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -23,10 +27,12 @@ public class DatabaseManager extends SQLiteOpenHelper{
 
     private final static String TAG = "DatabaseManager";
     public final static String DATABASE_NAME = "MedApp.db";
-    public final static int DATABASE_VER = 1;
+    public final static int DATABASE_VER = 4;
+    private Context context;
 
     public DatabaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VER);
+        this.context = context;
     }
 
     /**
@@ -47,9 +53,89 @@ public class DatabaseManager extends SQLiteOpenHelper{
      */
     public void deletePill(long pillId)
     {
+        PillItem pi = loadPillItemById(pillId);
+        //Get rid of the notifications
+        NotificationItemsManager.removeOldPillNotifications(pi, context);
         SQLiteDatabase db = getWritableDatabase();
+
         db.delete(DatabaseContract.PillEntry.TABLE_NAME,
                 DatabaseContract.PillEntry._ID + "=" + pillId, null);
+
+        db.close();
+    }
+
+    public List<MissedPillContainer> loadAllMissedPills()
+    {
+        List<MissedPillContainer> loadedItems = new ArrayList<>();
+
+        //Get all of the rows in the table for missed pills/meds
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor c = database.query(DatabaseContract.MissedPillEntry.TABLE_NAME, null, null, null, null, null, null);
+
+        //Go through each row
+        c.moveToFirst();
+        while(!c.isAfterLast())
+        {
+            try {
+                MissedPillContainer newItem = missedPillContainerFromCursor(c);
+                loadedItems.add(newItem);
+            }
+            catch(IllegalArgumentException e)
+            {
+                Log.e(TAG, "Could not load missed pill from DB: loadAppointmentItems(): \n" + e.getMessage());
+                e.printStackTrace();
+            }
+
+            c.moveToNext();
+        }
+
+        database.close();
+        return loadedItems;
+    }
+
+    private MissedPillContainer missedPillContainerFromCursor(Cursor c)
+    {
+        MissedPillContainer newItem;
+
+        int colIndex = c.getColumnIndexOrThrow(DatabaseContract.MissedPillEntry._ID);
+        long pk = c.getLong(colIndex);
+
+        colIndex = c.getColumnIndexOrThrow(DatabaseContract.MissedPillEntry.COLUMN_NAME_TIME_MISSED);
+        long missedDate = c.getLong(colIndex);
+
+        colIndex = c.getColumnIndexOrThrow(DatabaseContract.MissedPillEntry.COLUMN_NAME_PILL_NAME);
+        String pillName = c.getString(colIndex);
+
+        newItem = new MissedPillContainer(pillName, pk, missedDate);
+
+        return newItem;
+    }
+
+    /**
+     * Adds a missed medication to the database (missed time is when this is called)
+     * @param missedPill
+     * @return Returns DB table id of the missed pill instance (Separate from pillId!!)
+     */
+    public long addMissedPill(PillItem missedPill)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        Date missedTime = new Date();
+
+        //Insert into database
+        ContentValues newData = new ContentValues();
+        newData.put(DatabaseContract.MissedPillEntry.COLUMN_NAME_PILL_NAME, missedPill.getTitle());
+        newData.put(DatabaseContract.MissedPillEntry.COLUMN_NAME_TIME_MISSED, missedTime.getTime()/1000);
+        long id = db.insert(DatabaseContract.MissedPillEntry.TABLE_NAME, null, newData);
+        db.close();
+
+        return id;
+    }
+
+    public void removeMissedPill(long missedPillId)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(DatabaseContract.MissedPillEntry.TABLE_NAME,
+                DatabaseContract.MissedPillEntry._ID + "=" + missedPillId, null);
         db.close();
     }
 
@@ -476,10 +562,30 @@ public class DatabaseManager extends SQLiteOpenHelper{
                 DatabaseContract.PillEntry.COLUMN_NAME_INSTR + " TEXT"
                 + ")"
         );
+
+        //Missed Pills table
+        db.execSQL("CREATE TABLE " + DatabaseContract.MissedPillEntry.TABLE_NAME +
+            " (" +
+                DatabaseContract.MissedPillEntry._ID + " INTEGER PRIMARY KEY," +
+                DatabaseContract.MissedPillEntry.COLUMN_NAME_PILL_NAME + " TEXT," +
+                DatabaseContract.MissedPillEntry.COLUMN_NAME_TIME_MISSED + " INTEGER" +
+            ")"
+        );
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+        if(oldVersion < 4) {
+            //Missed Pills table
+            //Missed Pills table
+            db.execSQL("CREATE TABLE " + DatabaseContract.MissedPillEntry.TABLE_NAME +
+                    " (" +
+                    DatabaseContract.MissedPillEntry._ID + " INTEGER PRIMARY KEY," +
+                    DatabaseContract.MissedPillEntry.COLUMN_NAME_PILL_NAME + " TEXT," +
+                    DatabaseContract.MissedPillEntry.COLUMN_NAME_TIME_MISSED + " INTEGER" +
+                    ")"
+            );
+        }
     }
 }

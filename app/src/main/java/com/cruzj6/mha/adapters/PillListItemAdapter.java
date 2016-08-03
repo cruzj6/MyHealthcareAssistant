@@ -16,9 +16,11 @@ import android.widget.TextView;
 import com.cruzj6.mha.R;
 import com.cruzj6.mha.fragments.PillSettingsDialog;
 import com.cruzj6.mha.helpers.TimeHelper;
+import com.cruzj6.mha.models.Days;
 import com.cruzj6.mha.models.ItemSettingsInvokeHandler;
 import com.cruzj6.mha.models.PillItem;
 import com.cruzj6.mha.models.SettingsTypes;
+import com.cruzj6.mha.models.TimesPerDayManagerItem;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -38,125 +40,143 @@ public class PillListItemAdapter extends RemovableItemListViewAdapter {
     @Override
     public View getView (final int position, View convertView, ViewGroup parent)
     {
-        final PillItem curItem = (PillItem) getItem(position);
 
-        //Inflate and get view components
+            final PillItem curItem = (PillItem) getItem(position);
 
-        LayoutInflater inf = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View pillItemView = convertView;
-        if(pillItemView == null)
-            pillItemView = inf.inflate(R.layout.listviewitem_pill, null);
-        ImageButton notesBtn = (ImageButton) pillItemView.findViewById(R.id.button_show_item_notes);
-        TextView titleTextView = (TextView) pillItemView.findViewById(R.id.textview_pill_title);
-        TextView pillDaysTextView = (TextView) pillItemView.findViewById(R.id.textview_pill_days);
-        TextView pillTimesToTake = (TextView) pillItemView.findViewById(R.id.textview_take_at_times);
-        TextView refillByTextView = (TextView) pillItemView.findViewById(R.id.textview_refill_by);
+            //Inflate and get view components
 
-        //Set up the super class's removal mode with the checkbox
-        final CheckBox removeBox = (CheckBox) pillItemView.findViewById(R.id.checkbox_remove);
-        setRemovalScan(removeBox, curItem);
+            LayoutInflater inf = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View pillItemView = convertView;
+            if (pillItemView == null)
+                pillItemView = inf.inflate(R.layout.listviewitem_pill, null);
+        if(getCount() > 0) {
+            ImageButton notesBtn = (ImageButton) pillItemView.findViewById(R.id.button_show_item_notes);
+            TextView titleTextView = (TextView) pillItemView.findViewById(R.id.textview_pill_title);
+            TextView pillDaysTextView = (TextView) pillItemView.findViewById(R.id.textview_pill_days);
+            TextView pillTimesToTake = (TextView) pillItemView.findViewById(R.id.textview_take_at_times);
+            TextView refillByTextView = (TextView) pillItemView.findViewById(R.id.textview_refill_by);
 
-        //Set up components
-        titleTextView.setText(curItem.getTitle());
+            //Set up the super class's removal mode with the checkbox
+            final CheckBox removeBox = (CheckBox) pillItemView.findViewById(R.id.checkbox_remove);
+            setRemovalScan(removeBox, curItem);
 
-        //Check which days to take it
-        StringBuilder daysSb = new StringBuilder();
-        boolean diffTimes = TimeHelper.checkSameTimesEachDay(curItem);
-        long[] times = null;
-        long[] cachedTimes = null;
-        int numDays = 0;
-        for(int i = 0; i < 7; i++)
-        {
-            if (curItem.getTimesForDay(i) != null) {
-                numDays++;
-                cachedTimes = curItem.getTimesForDay(i);
+            //Set up components
+            titleTextView.setText(curItem.getTitle());
 
-                //Switch to get the char for the day to show
-                switch (i) {
-                    case 0:
-                        daysSb.append("S" + ",");
-                        break;
-                    case 1:
-                        daysSb.append("M" + ",");
+            //Check which days to take it
+            StringBuilder daysSb = new StringBuilder();
+            final boolean diffTimes = !TimeHelper.checkSameTimesEachDay(curItem);
+            long[] times = null;
+            long[] cachedTimes = null;
+            int numDays = 0;
+            for (int i = 0; i < 7; i++) {
+                if (curItem.getTimesForDay(i) != null) {
+                    numDays++;
+                    cachedTimes = curItem.getTimesForDay(i);
 
-                        break;
-                    case 2:
-                        daysSb.append("T" + ",");
+                    //Switch to get the char for the day to show
+                    switch (i) {
+                        case 0:
+                            daysSb.append("S" + ",");
+                            break;
+                        case 1:
+                            daysSb.append("M" + ",");
 
-                        break;
-                    case 3:
-                        daysSb.append("W" + ",");
+                            break;
+                        case 2:
+                            daysSb.append("T" + ",");
 
-                        break;
-                    case 4:
-                        daysSb.append("R" + ",");
+                            break;
+                        case 3:
+                            daysSb.append("W" + ",");
 
-                        break;
-                    case 5:
-                        daysSb.append("F" + ",");
+                            break;
+                        case 4:
+                            daysSb.append("R" + ",");
 
-                        break;
-                    case 6:
-                        daysSb.append("Sa" + ",");
+                            break;
+                        case 5:
+                            daysSb.append("F" + ",");
 
-                        break;
+                            break;
+                        case 6:
+                            daysSb.append("Sa" + ",");
+
+                            break;
+                    }
+
                 }
-
             }
+
+            if (daysSb.length() > 1) daysSb.deleteCharAt(daysSb.length() - 1);
+
+            //Set the days to take text
+            pillDaysTextView.setText(getContext()
+                    .getString(R.string.take, (numDays == 7 ? "Every Day" : daysSb.toString())));
+
+            final StringBuilder timesSb = new StringBuilder();
+            final SimpleDateFormat f = new SimpleDateFormat("hh:mm aaa");
+
+            //Build string with each time
+            if (!diffTimes && cachedTimes!= null) {
+                for (long time : cachedTimes) {
+                    Date d = new Date((long) time * 1000);
+                    timesSb.append(f.format(d) + ", ");
+                }
+                timesSb.deleteCharAt(timesSb.length() - 2);
+            }
+
+            //Finally set the text
+            pillTimesToTake.setText(diffTimes ? "Times Differ Per Day" : timesSb.toString());
+
+            //New format for date
+            f.applyPattern("MM/dd/yy");
+
+            refillByTextView.setText(getContext()
+                    .getString(R.string.refill_by, f.format(new Date(curItem.getRefillDate() * 1000))));
+            notesBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    //Pop up the notes in a dialog
+                    AlertDialog.Builder d = new AlertDialog.Builder(getContext());
+                    d.setTitle("Medication Notes");
+                    if (diffTimes) {
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < curItem.getTimesPerDay().size(); i++) {
+                            long[] curDayItems = curItem.getTimesPerDay().get(i);
+                            Days day = Days.values()[i];
+                            if (curDayItems != null && curDayItems.length > 0) {
+                                sb.append("\n" + day.getStringName() + ": ");
+                                for (long time : curDayItems) {
+                                    f.applyPattern("hh:mm aaa");
+                                    sb.append(f.format(time * 1000));
+                                }
+                            }
+                        }
+                        sb.append("\n\n" + curItem.getInstr());
+                        sb.deleteCharAt(0);
+                        d.setMessage(sb.toString());
+                    } else {
+                        d.setMessage("Take at: " + timesSb.toString() + "\n\n" + curItem.getInstr());
+                    }
+                    d.show();
+                }
+            });
+
+            pillItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PillSettingsDialog psd = new PillSettingsDialog();
+                    Bundle b = new Bundle();
+                    b.putLong("id", curItem.getPillId());
+                    b.putSerializable("mode", SettingsTypes.EDIT_EXISTING);
+                    psd.setItemSettingsInvokeHandler((ItemSettingsInvokeHandler) getContext());
+                    psd.setArguments(b);
+                    psd.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "Pill Settings");
+                }
+            });
         }
-
-        if(daysSb.length() > 1) daysSb.deleteCharAt(daysSb.length() - 1);
-
-        //Set the days to take text
-        pillDaysTextView.setText(getContext()
-                .getString(R.string.take, (numDays == 7 ? "Every Day" : daysSb.toString())));
-
-        StringBuilder timesSb = new StringBuilder();
-        SimpleDateFormat f = new SimpleDateFormat("hh:mm aaa");
-
-        //Build string with each time
-        if(!diffTimes)
-        {
-            for(long time : cachedTimes)
-            {
-                Date d = new Date((long)time*1000);
-                timesSb.append(f.format(d) + ", ");
-            }
-            timesSb.deleteCharAt(timesSb.length() - 2);
-        }
-
-        //Finally set the text
-        pillTimesToTake.setText(diffTimes ? "Times Differ Per Day" : timesSb.toString());
-
-        //New instance with new format
-        f.applyPattern("MM/dd/yy");
-
-        refillByTextView.setText(getContext()
-                .getString(R.string.refill_by, f.format(new Date(curItem.getRefillDate()*1000))));
-        notesBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                //Pop up the notes in a dialog
-                AlertDialog.Builder d = new AlertDialog.Builder(getContext());
-                d.setTitle("Medication Notes");
-                d.setMessage(curItem.getInstr());
-                d.show();
-            }
-        });
-
-        pillItemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PillSettingsDialog psd = new PillSettingsDialog();
-                Bundle b = new Bundle();
-                b.putLong("id", curItem.getPillId());
-                b.putSerializable("mode", SettingsTypes.EDIT_EXISTING);
-                psd.setItemSettingsInvokeHandler((ItemSettingsInvokeHandler)getContext());
-                psd.setArguments(b);
-                psd.show(((AppCompatActivity)getContext()).getSupportFragmentManager(), "Pill Settings");
-            }
-        });
 
         return pillItemView;
     }

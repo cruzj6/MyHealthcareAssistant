@@ -40,7 +40,7 @@
         android:textSize="16sp"
         android:layout_marginStart="10dp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
+        android:textColor="#ce000000"
         android:layout_marginTop="20dp"
         android:text="@string/appointment_title"
         android:layout_width="match_parent"
@@ -62,7 +62,7 @@
         <TextView
             android:textSize="16sp"
             android:layout_marginStart="10dp"
-            android:textColor="@android:color/black"
+            android:textColor="#ce000000"
             android:textStyle="bold"
             android:layout_gravity="center_vertical"
             android:text="@string/date"
@@ -72,14 +72,15 @@
         <TextView
             android:textSize="16sp"
             android:id="@+id/textview_selected_date"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="#87000000"
             android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:layout_height="wrap_content"
             android:layout_width="0dp"/>
 
         <Button
-            android:backgroundTint="@color/colorPrimary"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/colorAccent"
             android:textColor="@android:color/white"
             android:id="@+id/button_set_date"
             android:text="@string/set_date"
@@ -94,7 +95,7 @@
         <TextView
             android:textSize="16sp"
             android:layout_marginStart="10dp"
-            android:textColor="@android:color/black"
+            android:textColor="#ce000000"
             android:textStyle="bold"
             android:layout_gravity="center_vertical"
             android:text="@string/time"
@@ -104,14 +105,15 @@
         <TextView
             android:textSize="16sp"
             android:id="@+id/textview_selected_time"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="#7e000000"
             android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:layout_height="wrap_content"
             android:layout_width="0dp"/>
 
         <Button
-            android:backgroundTint="@color/colorPrimary"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/colorAccent"
             android:textColor="@android:color/white"
             android:id="@+id/button_set_time"
             android:text="@string/set_time"
@@ -122,7 +124,7 @@
 
     <View
         android:layout_marginTop="10dp"
-        android:background="@android:color/darker_gray"
+        android:background="#7e000000"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_height="1dp"
@@ -136,7 +138,7 @@
         <TextView
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="#ce000000"
             android:layout_marginStart="10dp"
             android:layout_weight="9"
             android:text="@string/requires_lab_work"
@@ -157,7 +159,7 @@
         android:layout_height="wrap_content">
         <TextView
             android:textSize="16sp"
-            android:textColor="@android:color/black"
+            android:textColor="#ce000000"
             android:layout_marginStart="20dp"
             android:text="@string/number_of_days_results_take"
             android:layout_weight="9"
@@ -183,7 +185,7 @@
     </LinearLayout>
     <View
         android:layout_marginTop="10dp"
-        android:background="@android:color/darker_gray"
+        android:background="#7e000000"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_height="1dp"
@@ -196,7 +198,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="10dp"
-            android:textColor="@android:color/black"
+            android:textColor="#ce000000"
             android:text="@string/remind_me_days_before"
             android:layout_weight="8"
             android:layout_width="0dp"
@@ -221,7 +223,7 @@
     </LinearLayout>
     <View
         android:layout_marginTop="10dp"
-        android:background="@android:color/darker_gray"
+        android:background="#7e000000"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_height="1dp"
@@ -231,12 +233,14 @@
         android:textSize="16sp"
         android:layout_marginStart="10dp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
+        android:textColor="#ce000000"
         android:layout_marginTop="10dp"
         android:text="@string/description_notes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <EditText
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:id="@+id/edittext_notes"
         android:hint="@string/enter_notes_or_description_of_appointment"
         android:layout_width="match_parent"
