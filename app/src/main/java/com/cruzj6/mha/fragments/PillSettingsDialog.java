@@ -73,6 +73,7 @@ public class PillSettingsDialog extends DialogFragment implements DatePickerDial
     private List<long[]> timesPerDay;
     private ItemSettingsInvokeHandler handler;
     private PillTimesPerDayAdapter pillTimesAdapter;
+    private PillItem cachedItem;
 
     private final static String TAG = "PillSettingsDialog";
     private final static int SET_END_DATE = 0;
@@ -121,6 +122,9 @@ public class PillSettingsDialog extends DialogFragment implements DatePickerDial
         if(mode == SettingsTypes.EDIT_EXISTING) {
             final long id = getArguments().getLong("id");
             item = dbManager.loadPillItemById(id);
+
+            //Cache the old one for deleting alarms
+            cachedItem = new PillItem(item);
             buildSettingsFields();
         }
         else if(mode == SettingsTypes.NEW_ITEM) {
@@ -204,45 +208,7 @@ public class PillSettingsDialog extends DialogFragment implements DatePickerDial
         builder.setView(view).setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-                String medName = pillName.getText().toString();
-                String instr = pillInstr.getText().toString();
-                PillItem pillit = null;
-
-                switch(radioGroupEnd.getCheckedRadioButtonId())
-                {
-                    case R.id.radio_duration:
-                        int dur = Integer.parseInt(duration.getText().toString());
-                        pillit = new PillItem(medName, instr, dur, cachedRefillDate);
-                        if(mode == SettingsTypes.EDIT_EXISTING) pillit.setPillId(getArguments().getLong("id"));
-                        break;
-                    case R.id.radio_tildate:
-                        long dateUnix = cachedEndDate;
-                        pillit = new PillItem(medName, instr, dateUnix, cachedRefillDate);
-                        if(mode == SettingsTypes.EDIT_EXISTING) pillit.setPillId(getArguments().getLong("id"));
-                        break;
-                    case R.id.radio_none:
-                        pillit = new PillItem(medName, instr, 0, cachedRefillDate);
-                        if(mode == SettingsTypes.EDIT_EXISTING) pillit.setPillId(getArguments().getLong("id"));
-                        break;
-                }
-                if(pillit != null)
-                {
-                    //Set up the times per day in the item
-                    for(Days day : Days.values())
-                    {
-                        pillit.setTimesForDay(day, timesPerDay.get(day.getNumVal()));
-                    }
-                    long pillId = dbManager.savePill(pillit);
-                    NotificationItemsManager.createMedNotification(pillId, getContext());
-
-                    //Trigger handler method
-                    handler.onItemSaved();
-                }
-                else{
-                    throw new Error("Pill item NULL,  never set!");
-                }
-
+                //We ignore here, we do it in override so that it doesn't close if no name (below)
             }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -252,7 +218,77 @@ public class PillSettingsDialog extends DialogFragment implements DatePickerDial
         });
 
         //Build and return it
-        Dialog d = builder.create();
+        final AlertDialog d = builder.create();
+
+        d.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialog) {
+
+                Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
+                b.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        String medName = pillName.getText().toString();
+                        String instr = pillInstr.getText().toString();
+                        PillItem pillit = null;
+
+                        //Dont close if they didnt put a name
+                        if(medName.replaceAll("\\s+","").equals(""))
+                        {
+                            Toast t =
+                                    Toast.makeText(getContext(),
+                                            "Please Enter a Name\nFor the Medication", Toast.LENGTH_SHORT);
+                            t.show();
+                        }
+                        else {
+                            switch (radioGroupEnd.getCheckedRadioButtonId()) {
+                                case R.id.radio_duration:
+                                    int dur = Integer.parseInt(duration.getText().toString());
+                                    pillit = new PillItem(medName, instr, dur, cachedRefillDate);
+                                    if (mode == SettingsTypes.EDIT_EXISTING)
+                                        pillit.setPillId(getArguments().getLong("id"));
+                                    break;
+                                case R.id.radio_tildate:
+                                    long dateUnix = cachedEndDate;
+                                    pillit = new PillItem(medName, instr, dateUnix, cachedRefillDate);
+                                    if (mode == SettingsTypes.EDIT_EXISTING)
+                                        pillit.setPillId(getArguments().getLong("id"));
+                                    break;
+                                case R.id.radio_none:
+                                    pillit = new PillItem(medName, instr, 0, cachedRefillDate);
+                                    if (mode == SettingsTypes.EDIT_EXISTING)
+                                        pillit.setPillId(getArguments().getLong("id"));
+                                    break;
+                            }
+                            if (pillit != null) {
+                                //Set up the times per day in the item
+                                for (Days day : Days.values()) {
+                                    pillit.setTimesForDay(day, timesPerDay.get(day.getNumVal()));
+                                }
+
+                                //Get rid of old alarms so they dont go off
+                                if(cachedItem != null)
+                                {
+                                    NotificationItemsManager
+                                            .removeOldPillNotifications(cachedItem, getContext());
+                                }
+                                long pillId = dbManager.savePill(pillit);
+                                NotificationItemsManager.createMedNotification(pillId, getContext());
+
+                                //Trigger handler method
+                                handler.onItemSaved();
+                            } else {
+                                throw new Error("Pill item NULL,  never set!");
+                            }
+                            d.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+
         d.setCanceledOnTouchOutside(false);
         return d;
     }

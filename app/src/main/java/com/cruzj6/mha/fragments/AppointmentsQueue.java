@@ -20,6 +20,7 @@ import com.cruzj6.mha.models.SettingsTypes;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -74,6 +75,7 @@ public class AppointmentsQueue extends Fragment implements ItemSettingsInvokeHan
         apptsLayout.removeAllViews();
         //Get our appointment data from the database and go through each one
         List<AppointmentItem> apptsList = new DatabaseManager(getContext()).loadAppointmentItems();
+        Collections.sort(apptsList);
         for(AppointmentItem item : apptsList)
         {
             final AppointmentItem apptItemFinal = item;

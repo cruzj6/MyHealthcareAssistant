@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.cruzj6.mha.activities.RefillRxActivity;
 import com.cruzj6.mha.dataManagement.DatabaseManager;
 import com.cruzj6.mha.models.AppointmentItem;
 import com.cruzj6.mha.R;
@@ -20,7 +21,12 @@ import com.cruzj6.mha.models.SimpleTimeItem;
 import com.cruzj6.mha.models.TimesPerDayManager;
 import com.cruzj6.mha.models.TimesPerDayManagerItem;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
+
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -31,9 +37,11 @@ public final class NotificationItemsManager extends BroadcastReceiver {
     private final static String TAG = "NotificationItems";
     private final static int NTYPE_APPT = 2;
     private final static int NTYPE_MED = 3;
+    private final static int NTYPE_MED_REFILL = 4;
     private final static String ACTION_WAIT = "w";
     private final static String ACTION_TOOK = "t";
     private final static String ACTION_SKIP = "s";
+    private final static String ACTION_REFILL_NOW = "rn";
 
 
     @Override
@@ -46,18 +54,42 @@ public final class NotificationItemsManager extends BroadcastReceiver {
         if(act != null) {
             if (act.equals(ACTION_SKIP)) {
                 Log.v(TAG, "Skip Pill");
+
+                //Add missed medication to the database
+                DatabaseManager dbManager = new DatabaseManager(context);
+                PillItem thePillItem = dbManager.loadPillItemById(((Long)extras.get("item")).intValue());
+                dbManager.addMissedPill(thePillItem);
+
             } else if (act.equals(ACTION_TOOK)) {
                 Log.v(TAG, "Took Pill");
             } else if (act.equals(ACTION_WAIT)) {
                 Log.v(TAG, "Wait Pill");
+                int reqCode = (int)extras.get("reqCode");
+               // PendingIntent pendingIntent = new PendingIntent(context, reqCode, )
+
+                AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                //alarmManager.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
+
+            } else if(act.equals(ACTION_REFILL_NOW))
+            {
+                //Open refill activity for the user to refill their meds
+                Intent i = new Intent(context.getApplicationContext(), RefillRxActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(i);
             }
-            AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
-                    (int)extras.getLong("item"), intent,PendingIntent.FLAG_UPDATE_CURRENT);
-            mgr.cancel(pendingIntent);
-            pendingIntent.cancel();
-            NotificationManager nmgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            nmgr.cancel((int)extras.getLong("item"));
+            try {
+                AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+                        (int) extras.getLong("item"), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                mgr.cancel(pendingIntent);
+                pendingIntent.cancel();
+                NotificationManager nmgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                nmgr.cancel((int) extras.getLong("item"));
+            }
+            catch(NullPointerException e)
+            {
+                Log.e(TAG, "No item sent in bundle for intent notification: " + e.getMessage());
+            }
         }
 
         switch(ntype){
@@ -91,11 +123,14 @@ public final class NotificationItemsManager extends BroadcastReceiver {
 
             case NTYPE_MED:
                 long pillId = intent.getExtras().getLong("item");
+                int day = intent.getExtras().getInt("day");
+                SimpleTimeItem timeItem = (SimpleTimeItem) intent.getExtras().getSerializable("timeItem");
                 PillItem pillItem = new DatabaseManager(context).loadPillItemById(pillId);
 
                 //Took it option
                 Intent tookReceive = new Intent(context, NotificationItemsManager.class);
                 tookReceive.putExtra("item", pillItem.getPillId());
+                tookReceive.putExtra("reqCode", (int)extras.get("reqCode"));
                 tookReceive.setAction(ACTION_TOOK);
                 PendingIntent pendingIntentTook = PendingIntent.getBroadcast(context,
                         (int)pillItem.getPillId(), tookReceive, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -103,6 +138,7 @@ public final class NotificationItemsManager extends BroadcastReceiver {
                 //Wait it option
                 Intent waitReceive = new Intent(context, NotificationItemsManager.class);
                 waitReceive.putExtra("item", pillItem.getPillId());
+                waitReceive.putExtra("reqCode", (int)extras.get("reqCode"));
                 waitReceive.setAction(ACTION_WAIT);
                 PendingIntent pendingIntentWait = PendingIntent.getBroadcast(context,
                         (int)pillItem.getPillId(), waitReceive, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -110,6 +146,7 @@ public final class NotificationItemsManager extends BroadcastReceiver {
                 //Skip it option
                 Intent skipReceive = new Intent(context, NotificationItemsManager.class);
                 skipReceive.putExtra("item", pillItem.getPillId());
+                skipReceive.putExtra("reqCode", (int)extras.get("reqCode"));
                 skipReceive.setAction(ACTION_SKIP);
                 PendingIntent pendingIntentSkip = PendingIntent.getBroadcast(context,
                         (int)pillItem.getPillId(), skipReceive, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -133,6 +170,32 @@ public final class NotificationItemsManager extends BroadcastReceiver {
                 NotificationManagerCompat nManager =
                         (NotificationManagerCompat) NotificationManagerCompat.from(context);
                 nManager.notify((int)pillItem.getPillId(), pillNo);
+
+                //Reset alarm for the next week
+                setPillAlarmForTimeDay(context, pillItem, day, timeItem);
+                break;
+
+            case NTYPE_MED_REFILL:
+                PillItem pItem = new DatabaseManager(context).loadPillItemById(extras.getLong("item"));
+                //Refill it now action
+                Intent refillNow = new Intent(context, NotificationItemsManager.class);
+                refillNow.putExtra("item", pItem.getPillId());
+                refillNow.setAction(ACTION_REFILL_NOW);
+                PendingIntent pendingIntentRefill = PendingIntent.getBroadcast(context,
+                        (int)pItem.getPillId(), refillNow, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                Notification refillNo  = new NotificationCompat.BigTextStyle(
+                        new NotificationCompat.Builder(context)
+                                .setContentTitle(context.getString(R.string.mha))
+                                .setContentText("REFILL MEDICATION REMINDER")
+                                .setSmallIcon(R.drawable.ic_assignment_24dp)
+                                .addAction(new NotificationCompat.Action(R.drawable.ic_done_24dp, "Refill Now", pendingIntentRefill)))
+                               .bigText("Reminder to refill Rx: " + pItem.getTitle())
+                        .build();
+
+                NotificationManagerCompat nManage =
+                        (NotificationManagerCompat) NotificationManagerCompat.from(context);
+                nManage.notify((int)pItem.getPillId(), refillNo);
                 break;
         }
     }
@@ -156,9 +219,25 @@ public final class NotificationItemsManager extends BroadcastReceiver {
         alarmManager.set(AlarmManager.RTC_WAKEUP, apptItem.getApptDate()*1000 , pendingIntent);
     }
 
+    /**
+     * Create notifications for the upcoming weeks pills based on the pillItem the id is given for
+     * @param pillItemId
+     * @param context
+     */
     public static void createMedNotification(long pillItemId, Context context)
     {
         PillItem pillItem = new DatabaseManager(context).loadPillItemById(pillItemId);
+
+        //Set alarm for the refill date
+        Intent intent = new Intent(context, NotificationItemsManager.class);
+        intent.putExtra("item", pillItem.getPillId());
+        intent.putExtra("type", NTYPE_MED_REFILL);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+                (int)pillItem.getPillId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, pillItem.getRefillDate()*1000, pendingIntent);
 
         //Set the alarms for the week
         pillsSetAlarmsUpcomingWeek(context, pillItem);
@@ -175,38 +254,92 @@ public final class NotificationItemsManager extends BroadcastReceiver {
         TimesPerDayManager timesManager = pillItem.getTimesManager();
 
         //Alarm for each day's times
-        for(TimesPerDayManagerItem dayItem : timesManager.getTimesPerDay())
-        {
-            //Each time for each day
-            for(SimpleTimeItem timeItem : dayItem.getTimesList())
-            {
-                Bundle extras = new Bundle();
-                Intent intent = new Intent(context, NotificationItemsManager.class);
-
-                //Data to send when notifying
-                extras.putLong("item", pillItem.getPillId());
-                extras.putInt("type", NTYPE_MED);
-                extras.putInt("day", dayItem.getDay().getNumVal());
-                extras.putSerializable("timeItem", timeItem);
-                intent.putExtras(extras);
-
-                //Get the request code
-                int reqCode = getUIDReqCodePillAlarm((int)pillItem.getPillId(),
-                        dayItem.getDay().getNumVal(), timeItem);
-
-                //If no error make the alarm
-                if(reqCode != -1) {
-                    //Create our intent with unique request code
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
-                            reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                    //Set the alarm
-                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, new Date().getTime(), pendingIntent);
+        if(timesManager != null) {
+            for (TimesPerDayManagerItem dayItem : timesManager.getTimesPerDay()) {
+                //Each time for each day
+                for (SimpleTimeItem timeItem : dayItem.getTimesList()) {
+                    //Set the alarm for next day/time
+                    setPillAlarmForTimeDay(context, pillItem, dayItem.getDay().getNumVal(), timeItem);
                 }
             }
-
         }
+    }
+
+    /**
+     * Sets an alarm for the given nearest day and time that match the day and time items passed
+     * @param context
+     * @param day Item containing info about the day of the week to set for
+     * @param timeItem Item containing info about the time of the day to set for
+     */
+    private static void setPillAlarmForTimeDay(Context context, PillItem pillItem,
+                                               int day, SimpleTimeItem timeItem)
+    {
+        Bundle extras = new Bundle();
+        Intent intent = new Intent(context, NotificationItemsManager.class);
+
+        //Get the request code
+        int reqCode = getUIDReqCodePillAlarm((int)pillItem.getPillId(),
+                day, timeItem);
+
+        //Data to send when notifying
+        extras.putLong("item", pillItem.getPillId());
+        extras.putInt("type", NTYPE_MED);
+        extras.putInt("day", day);
+        extras.putInt("reqCode", reqCode);
+        extras.putSerializable("timeItem", timeItem);
+        intent.putExtras(extras);
+
+        //If no error make the alarm
+        if(reqCode != -1) {
+            //Create our intent with unique request code
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+                    reqCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            int jodaDay = day == 0 ? 7 : day;
+            DateTime now = new DateTime(new Date());
+
+            //M = 1, Sun = 7 for JodaTime library
+            DateTime wDay = now.withDayOfWeek(jodaDay);
+
+            //If day/time already happened this week, add a week
+            if(jodaDay < new LocalDate().getDayOfWeek() || timeItem.getHour24() < wDay.getHourOfDay()
+                    || wDay.getHourOfDay() == timeItem.getHour24() &&
+                    wDay.getMinuteOfHour() >= timeItem.getMins())
+            {
+                wDay = wDay.plusWeeks(1);
+            }
+
+            //Set up the hour and mins
+            wDay = wDay.withHourOfDay(timeItem.getHour24());
+            wDay = wDay.withMinuteOfHour(timeItem.getMins());
+
+            //Set the alarm
+            long millis = wDay.getMillis();
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
+        }
+    }
+
+    /**
+     *  Deletes a pending alarm by passing it the alarms old parameters, use when a time is removed
+     * @param pillItem
+     * @param context
+     */
+    public static void removeOldPillNotifications(PillItem pillItem, Context context)
+    {
+        for(TimesPerDayManagerItem dayItem : pillItem.getTimesManager().getTimesPerDay()) {
+            for(SimpleTimeItem timeItem : dayItem.getTimesList()) {
+                int oldReqCode = getUIDReqCodePillAlarm((int)pillItem.getPillId(),
+                        dayItem.getDay().getNumVal(), timeItem);
+
+                AlarmManager am = (AlarmManager) context.getSystemService(context.getApplicationContext().ALARM_SERVICE);
+                Intent i = new Intent(context.getApplicationContext(), NotificationItemsManager.class);
+                PendingIntent p = PendingIntent.getBroadcast(context.getApplicationContext(), oldReqCode, i, 0);
+                am.cancel(p);
+                p.cancel();
+            }
+        }
+
     }
 
     /**

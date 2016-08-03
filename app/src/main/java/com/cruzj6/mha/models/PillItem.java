@@ -6,8 +6,11 @@ import android.provider.ContactsContract;
 import com.cruzj6.mha.dataManagement.DatabaseManager;
 import com.cruzj6.mha.models.RemovableItem;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +27,19 @@ public class PillItem extends RemovableItem implements Comparable<PillItem>{
     private List<long[]> timesPerDay = new ArrayList<>();
     private TimesPerDayManager timesManager;
 
+    public PillItem(PillItem item)
+    {
+        this.pillId = item.pillId;
+        this.title = item.title;
+        this.instr = item.instr;
+        this.duration = item.duration;
+        this.untilDate = item.untilDate;
+        this.refillDate = item.refillDate;
+        this.timesPerDay = new ArrayList<>(item.timesPerDay);
+        buildTimeManager();
+
+    }
+
     private PillItem(String title, String instr, long refillDate)
     {
         this.refillDate = refillDate;
@@ -31,6 +47,7 @@ public class PillItem extends RemovableItem implements Comparable<PillItem>{
         this.instr = instr;
         for(int i = 0; i < 7; i++)
             timesPerDay.add(null);
+        buildTimeManager();
     }
 
     public PillItem(String title, String instr, int duration, long refillDate)
@@ -132,9 +149,13 @@ public class PillItem extends RemovableItem implements Comparable<PillItem>{
      */
     @Override
     public int compareTo(PillItem another) {
+        DateTime today = new DateTime(new Date());
+        int dayStoSa = today.getDayOfWeek() == 6 ? 0 : today.getDayOfWeek() - 1;
         List<TimesPerDayManagerItem> thisManagerItems =  getTimesManager().getTimesPerDay();
         List<TimesPerDayManagerItem> anManagerItems = another.getTimesManager().getTimesPerDay();
-        for (int i = 0; i < 7; i++)
+
+        //Check remainder of this week
+        for (int i = dayStoSa; i < 7; i++)
         {
             //Both have times for today
             if(thisManagerItems.get(i).getTimesList().size() > 0 &&
@@ -167,7 +188,48 @@ public class PillItem extends RemovableItem implements Comparable<PillItem>{
             {
                 return -1;
             }
-            else
+            else if(anManagerItems.get(i).getTimesList().size() > 0)
+            {
+                //Another has times for today it wins
+                return 1;
+            }
+        }
+
+        //Okay loop around to next week
+        for(int i = 0; i < 7; i++)
+        {
+            //Both have times for today
+            if(thisManagerItems.get(i).getTimesList().size() > 0 &&
+                    anManagerItems.get(i).getTimesList().size() > 0)
+            {
+                SimpleTimeItem aEarliest = thisManagerItems.get(i).getTimesList().get(0);
+                SimpleTimeItem thisEarliest = anManagerItems.get(i).getTimesList().get(0);
+                if(aEarliest.getHour24() < thisEarliest.getHour24())
+                {
+                    return -1;
+                }
+                else if(aEarliest.getHour24() > thisEarliest.getHour24())
+                {
+                    return 1;
+                }
+                else
+                {
+                    if(aEarliest.getMins() > thisEarliest.getMins())
+                    {
+                        return 1;
+                    }
+                    else if(aEarliest.getMins() < thisEarliest.getMins())
+                    {
+                        return -1;
+                    }
+                    else return 0;
+                }
+            }//This has times for today, it wins
+            else if(thisManagerItems.get(i).getTimesList().size() > 0)
+            {
+                return -1;
+            }
+            else if(anManagerItems.get(i).getTimesList().size() > 0)
             {
                 //Another has times for today it wins
                 return 1;

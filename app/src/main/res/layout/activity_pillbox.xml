@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimaryDark"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -23,6 +24,7 @@
             android:id="@+id/linearLayout_mt"
             android:layout_weight="0.3">
             <Button
+                android:textColor="@android:color/white"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="M"
                 android:onClick="showPillListForDay"
@@ -32,6 +34,7 @@
                 android:layout_width="150dp"
                 android:layout_height="match_parent" />
             <Button
+                android:textColor="@android:color/white"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="T"
                 android:onClick="showPillListForDay"
@@ -52,6 +55,7 @@
             android:layout_alignParentStart="true"
             android:layout_weight="0.3">
             <Button
+                android:textColor="@android:color/white"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="W"
                 android:onClick="showPillListForDay"
@@ -61,6 +65,7 @@
                 android:layout_width="150dp"
                 android:layout_height="match_parent" />
             <Button
+                android:textColor="@android:color/white"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="R"
                 android:onClick="showPillListForDay"
@@ -78,6 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3">
             <Button
+                android:textColor="@android:color/white"
                 android:text="F"
                 android:backgroundTint="@color/colorPrimary"
                 android:onClick="showPillListForDay"
@@ -87,6 +93,7 @@
                 android:layout_width="150dp"
                 android:layout_height="match_parent" />
             <Button
+                android:textColor="@android:color/white"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="Sa"
                 android:onClick="showPillListForDay"
@@ -106,6 +113,7 @@
             android:layout_height="wrap_content">
 
             <Button
+                android:textColor="@android:color/white"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="View All Pills"
                 android:onClick="showPillListForDay"
@@ -114,6 +122,7 @@
                 android:layout_height="match_parent" />
 
             <Button
+                android:textColor="@android:color/white"
                 android:backgroundTint="@color/colorPrimary"
                 android:text="S"
                 android:onClick="showPillListForDay"
@@ -125,4 +134,13 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button_add_pill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_alarm_add_white_24dp"/>
 </RelativeLayout>

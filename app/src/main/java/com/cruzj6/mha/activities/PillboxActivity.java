@@ -1,6 +1,7 @@
 package com.cruzj6.mha.activities;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,12 +20,14 @@ public class PillboxActivity extends AppCompatActivity {
     private Button saturdayBtn;
     private Button sundayyBtn;
     private Button allDaysBtn;
+    private FloatingActionButton addPillBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pillbox);
 
+        addPillBtn = (FloatingActionButton)findViewById(R.id.button_add_pill);
         mondayBtn = (Button)findViewById(R.id.button_day_m);
         tuesdayBtn = (Button)findViewById(R.id.button_day_t);
         wednesdayBtn = (Button)findViewById(R.id.button_day_w);

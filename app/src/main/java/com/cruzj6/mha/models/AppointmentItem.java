@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 /**
  * Created by Joey on 5/23/16.
  */
-public class AppointmentItem extends RemovableItem {
+public class AppointmentItem extends RemovableItem implements Comparable<AppointmentItem>{
 
     //Publics
     public static final SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -87,5 +87,18 @@ public class AppointmentItem extends RemovableItem {
     @Override
     public void removeFromDatabase(Context context) {
         new DatabaseManager(context).deleteAppointment(getApptId());
+    }
+
+    @Override
+    public int compareTo(AppointmentItem another) {
+        if(another.getApptDate() > this.getApptDate())
+        {
+            return -1;
+        }
+        else if(another.getApptDate() < this.getApptDate())
+        {
+            return 1;
+        }
+        else return 0;
     }
 }

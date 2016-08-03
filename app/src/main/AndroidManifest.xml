@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
 
     <application
@@ -43,7 +44,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.PillListActivity"/>
         <activity android:name=".fragments.MedTimesSelectionActivity"/>
-        <activity android:name=".activities.RefillWebViewActivity"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+        <activity android:name=".activities.RefillWebViewActivity"></activity>
+        <activity android:name=".activities.MissMedsActivity"/>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data
             android:name="com.google.android.gms.version"
