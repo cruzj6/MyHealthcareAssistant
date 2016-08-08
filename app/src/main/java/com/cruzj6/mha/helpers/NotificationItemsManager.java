@@ -38,6 +38,8 @@ public final class NotificationItemsManager extends BroadcastReceiver {
     private final static int NTYPE_APPT = 2;
     private final static int NTYPE_MED = 3;
     private final static int NTYPE_MED_REFILL = 4;
+    private final static int NTYPE_APPT_B4 = 5;
+    private final static int NTYPE_APPT_LABWORK = 6;
     private final static String ACTION_WAIT = "w";
     private final static String ACTION_TOOK = "t";
     private final static String ACTION_SKIP = "s";
@@ -100,7 +102,7 @@ public final class NotificationItemsManager extends BroadcastReceiver {
                 AppointmentItem theItem = new DatabaseManager(context).loadAppointmentById(apptId);
                 SimpleDateFormat f = new SimpleDateFormat("MM/dd hh:mm aaa");
 
-                // build notification
+                // Build notification
                 // the addAction re-use the same intent to keep the example short
                 Notification n  = new Notification.BigTextStyle(
                         new Notification.Builder(context)
@@ -114,11 +116,12 @@ public final class NotificationItemsManager extends BroadcastReceiver {
                                 theItem.getNotes())
                         .build();
 
-
                 NotificationManager notificationManager =
                         (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
                 notificationManager.notify((int)theItem.getApptId(), n);
+
+                //Remove it from the database
+                new DatabaseManager(context).deleteAppointment(theItem.getApptId());
                 break;
 
             case NTYPE_MED:
@@ -175,6 +178,22 @@ public final class NotificationItemsManager extends BroadcastReceiver {
                 setPillAlarmForTimeDay(context, pillItem, day, timeItem);
                 break;
 
+            case NTYPE_APPT_B4:
+                AppointmentItem apptItem = new DatabaseManager(context).loadAppointmentById(extras.getLong("item"));
+                Notification apptBeforeNo  = new NotificationCompat.BigTextStyle(
+                        new NotificationCompat.Builder(context)
+                                .setContentTitle(context.getString(R.string.mha) + " Reminder")
+                                .setContentText("Reminder about Appointment: " + apptItem.getAppointmentTitle())
+                                .setSmallIcon(R.drawable.ic_assignment_24dp))
+                        .bigText("Appointment: " + apptItem.getAppointmentTitle() +
+                                " in " + apptItem.getRemindDaysBefore() + " days")
+                        .build();
+
+                NotificationManagerCompat noManage =
+                        (NotificationManagerCompat) NotificationManagerCompat.from(context);
+                noManage.notify((int)apptItem.getApptId(), apptBeforeNo);
+                break;
+
             case NTYPE_MED_REFILL:
                 PillItem pItem = new DatabaseManager(context).loadPillItemById(extras.getLong("item"));
                 //Refill it now action
@@ -197,6 +216,20 @@ public final class NotificationItemsManager extends BroadcastReceiver {
                         (NotificationManagerCompat) NotificationManagerCompat.from(context);
                 nManage.notify((int)pItem.getPillId(), refillNo);
                 break;
+            case NTYPE_APPT_LABWORK:
+                AppointmentItem aItem = new DatabaseManager(context).loadAppointmentById(extras.getLong("item"));
+                Notification apptLabNo  = new NotificationCompat.BigTextStyle(
+                        new NotificationCompat.Builder(context)
+                                .setContentTitle(context.getString(R.string.mha) + " Labwork Reminder")
+                                .setContentText("Reminder about Labwork: " + aItem.getAppointmentTitle())
+                                .setSmallIcon(R.drawable.ic_assignment_24dp))
+                        .bigText("Get Labwork done for: " + aItem.getAppointmentTitle())
+                        .build();
+
+                NotificationManagerCompat notManage =
+                        (NotificationManagerCompat) NotificationManagerCompat.from(context);
+                notManage.notify((int)aItem.getApptId(), apptLabNo);
+                break;
         }
     }
 
@@ -208,6 +241,8 @@ public final class NotificationItemsManager extends BroadcastReceiver {
     public static void createApptNotification(long apptItemId, Context context)
     {
         AppointmentItem apptItem = new DatabaseManager(context).loadAppointmentById(apptItemId);
+
+        //Apointment at time of appt
         Intent intent = new Intent(context, NotificationItemsManager.class);
         intent.putExtra("item", apptItem.getApptId());
         intent.putExtra("type", NTYPE_APPT);
@@ -217,6 +252,45 @@ public final class NotificationItemsManager extends BroadcastReceiver {
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, apptItem.getApptDate()*1000 , pendingIntent);
+
+
+        if(apptItem.getRemindDaysBefore() > 0) {
+            //Now do days before reminder
+            Intent intentB4 = new Intent(context, NotificationItemsManager.class);
+            intentB4.putExtra("item", apptItem.getApptId());
+            intentB4.putExtra("type", NTYPE_APPT_B4);
+
+            //Intent for remind days before
+            PendingIntent pIntB4 = PendingIntent.getBroadcast(context,
+                    (int) (apptItem.getApptId() * apptItem.getRemindDaysBefore()), intentB4,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            //Get the date however many days before
+            DateTime dt = new DateTime(new Date(apptItem.getApptDate() * 1000));
+            dt = dt.plusDays((int) (-(apptItem.getRemindDaysBefore())));
+
+            //Set the alarm
+            alarmManager.set(AlarmManager.RTC_WAKEUP, dt.getMillis(), pIntB4);
+        }
+
+        if(apptItem.getLabworkDaysBefore() > 0) {
+            //Now do Labwork reminder
+            Intent intentLab = new Intent(context, NotificationItemsManager.class);
+            intentLab.putExtra("item", apptItem.getApptId());
+            intentLab.putExtra("type", NTYPE_APPT_LABWORK);
+
+            //Intent for labwork notification
+            PendingIntent pIntLab = PendingIntent.getBroadcast(context,
+                    (int) -(apptItem.getApptId() * apptItem.getLabworkDaysBefore()), intentLab,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            //Get the date however many days before the labwork shoule be done
+            DateTime dt = new DateTime(new Date(apptItem.getApptDate() * 1000));
+            dt = dt.plusDays((int) (-(apptItem.getLabworkDaysBefore())));
+
+            //Set the alarm
+            alarmManager.set(AlarmManager.RTC_WAKEUP, dt.getMillis(), pIntLab);
+        }
     }
 
     /**
@@ -318,6 +392,28 @@ public final class NotificationItemsManager extends BroadcastReceiver {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
         }
+    }
+
+    public static void removeApptNotifications(AppointmentItem item, Context context)
+    {
+        //Cancel appt notification
+        AlarmManager am = (AlarmManager) context.getSystemService(context.getApplicationContext().ALARM_SERVICE);
+        Intent i = new Intent(context.getApplicationContext(), NotificationItemsManager.class);
+        PendingIntent p = PendingIntent.getBroadcast(context.getApplicationContext(), (int)item.getApptId(), i, 0);
+        am.cancel(p);
+        p.cancel();
+
+        //Cancel days before reminder
+        p = PendingIntent.getBroadcast(context.getApplicationContext(),
+                (int)(item.getRemindDaysBefore() * item.getApptDate()), i, 0);
+        am.cancel(p);
+        p.cancel();
+
+        //Cancel Labwork reminder
+        p = PendingIntent.getBroadcast(context.getApplicationContext(),
+                (int)(item.getRemindDaysBefore() * item.getLabworkDaysBefore()), i, 0);
+        am.cancel(p);
+        p.cancel();
     }
 
     /**

@@ -69,7 +69,7 @@ public class PillsQueue extends Fragment implements ItemSettingsInvokeHandler{
 
             //Cut out days after/during today, sort by relative to today's day of week
             DateTime today = new DateTime(new Date());
-            int dayStoSa = today.getDayOfWeek() == 6 ? 0 : today.getDayOfWeek() - 1;
+            int dayStoSa = today.getDayOfWeek() == 7 ? 0 : today.getDayOfWeek();
             for (final PillItem pillItem : pillItems) {
                 View pillQItem = getActivity().getLayoutInflater().inflate(R.layout.layout_pill_queue_item, null);
                 TextView titleTextView = (TextView) pillQItem.findViewById(R.id.textview_pillq_item_title);
@@ -118,91 +118,85 @@ public class PillsQueue extends Fragment implements ItemSettingsInvokeHandler{
                         break;
                     }
                 }
-                if(nextDayItem == null) nextDayItem = tpdItems.get(0);
+                int k = 0;
+                while(nextDayItem == null && k < tpdItems.size())
+                {
+                    if(tpdItems.get(k).getTimesList().size() > 0)
+                        nextDayItem = tpdItems.get(k);
+                    k++;
+                }
                 nextSb.append("Take Next On: ");
 
                 SimpleTimeItem nextTime = null;
-                if(nextDayItem.getDay().getNumVal() != dayStoSa) nextSb.append(nextDayItem.getDay().getStringName());
-                else {
-                    //Check if it's today or next week, either to put today or day of week name
-                    if(nextDayItem.getTimesList().get(0).getHour24() > today.getHourOfDay())
-                        nextSb.append("Today");
-                    else if(nextDayItem.getTimesList().get(0).getHour24() < today.getHourOfDay())
-                    {
-                        //Check if there is a time that is later on today
-                        for(SimpleTimeItem timeItem : nextDayItem.getTimesList())
-                        {
-                            //Later hour
-                            if(timeItem.getHour24() > today.getHourOfDay())
-                            {
-                                nextTime = timeItem;
-                                break;
-                            }
-                            else if(timeItem.getHour24() == today.getHourOfDay())
-                            {
-                               //Later minutes of hour
-                                if(timeItem.getMins() >= today.getMinuteOfHour())
-                                {
+
+                if(nextDayItem != null) {
+                    if (nextDayItem.getDay().getNumVal() != dayStoSa)
+                        nextSb.append(nextDayItem.getDay().getStringName());
+                    else {
+                        //Check if it's today or next week, either to put today or day of week name
+                        if (nextDayItem.getTimesList().get(0).getHour24() > today.getHourOfDay())
+                            nextSb.append("Today");
+                        else if (nextDayItem.getTimesList().get(0).getHour24() < today.getHourOfDay()) {
+                            //Check if there is a time that is later on today
+                            for (SimpleTimeItem timeItem : nextDayItem.getTimesList()) {
+                                //Later hour
+                                if (timeItem.getHour24() > today.getHourOfDay()) {
                                     nextTime = timeItem;
                                     break;
-                                }
-                            }
-                        }
-                        //If we didnt get a later time today, we need to check the next day we take it
-                        if(nextTime == null)
-                        {
-                            if(tpdItems.size() > 1){
-                                boolean gotDay = false;
-                                //Check rest of week
-                                for(int i=dayStoSa + 1; i < tpdItems.size(); i++)
-                                {
-                                    if(tpdItems.get(i).getTimesList().size() > 0)
-                                    {
-                                        nextDayItem = tpdItems.get(i);
-                                        gotDay = true;
+                                } else if (timeItem.getHour24() == today.getHourOfDay()) {
+                                    //Later minutes of hour
+                                    if (timeItem.getMins() >= today.getMinuteOfHour()) {
+                                        nextTime = timeItem;
                                         break;
                                     }
                                 }
-
-                                //Check next week if we didnt find a day
-                                if(!gotDay)
-                                {
-                                    for(int i=0; i <= dayStoSa; i++)
-                                    {
-                                        if(tpdItems.get(i).getTimesList().size() > 0)
-                                        {
+                            }
+                            //If we didnt get a later time today, we need to check the next day we take it
+                            if (nextTime == null) {
+                                if (tpdItems.size() > 1) {
+                                    boolean gotDay = false;
+                                    //Check rest of week
+                                    for (int i = dayStoSa + 1; i < tpdItems.size(); i++) {
+                                        if (tpdItems.get(i).getTimesList().size() > 0) {
                                             nextDayItem = tpdItems.get(i);
+                                            gotDay = true;
                                             break;
                                         }
                                     }
+
+                                    //Check next week if we didnt find a day
+                                    if (!gotDay) {
+                                        for (int i = 0; i <= dayStoSa; i++) {
+                                            if (tpdItems.get(i).getTimesList().size() > 0) {
+                                                nextDayItem = tpdItems.get(i);
+                                                break;
+                                            }
+                                        }
+                                    }
                                 }
-                            }
-                            nextSb.append(nextDayItem.getDay().getStringName());
-                        }
-                        else nextSb.append("Today"); //Later time today, append today
-                    }
-                    else //Compare mins
-                    {
-                        if(nextDayItem.getTimesList().get(0).getMins() > today.getMinuteOfHour())
+                                nextSb.append(nextDayItem.getDay().getStringName());
+                            } else nextSb.append("Today"); //Later time today, append today
+                        } else //Compare mins
                         {
-                            nextSb.append("Today");
+                            if (nextDayItem.getTimesList().get(0).getMins() > today.getMinuteOfHour()) {
+                                nextSb.append("Today");
+                            } else
+                                nextSb.append(nextDayItem.getDay().getStringName());
                         }
-                        else
-                            nextSb.append(nextDayItem.getDay().getStringName());
                     }
-                }
 
-                if(nextDayItem.getTimesList().size() > 0) {
-                    nextSb.append(" at ");
-                    if(nextTime == null) nextTime = nextDayItem.getTimesList().get(0);
-                    String minsString = (nextTime.getMins() >= 10 ? nextTime.getMins() + "" :
-                            "0" + nextTime.getMins());
-                    nextSb.append(nextTime.getHour() + ":" + minsString +
-                            (nextTime.getHour24() > 12 ? "pm" : "am"));
-                }
+                    if (nextDayItem.getTimesList().size() > 0) {
+                        nextSb.append(" at ");
+                        if (nextTime == null) nextTime = nextDayItem.getTimesList().get(0);
+                        String minsString = (nextTime.getMins() >= 10 ? nextTime.getMins() + "" :
+                                "0" + nextTime.getMins());
+                        nextSb.append(nextTime.getHour() + ":" + minsString +
+                                (nextTime.getHour24() > 12 ? "pm" : "am"));
+                    }
 
-                //Set the next time to take text
-                nextTakeTextView.setText(nextSb.toString());
+                    //Set the next time to take text
+                    nextTakeTextView.setText(nextSb.toString());
+                }
 
                 //nextTakeTextView.setText("Take Next: " + );
                 pillsLayout.addView(pillQItem);

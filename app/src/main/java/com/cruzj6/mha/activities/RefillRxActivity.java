@@ -253,7 +253,7 @@ public class RefillRxActivity extends AppCompatActivity {
             //Request Location updates
             final String bestProvider = lm.getBestProvider(new Criteria(), true);
             locListener = new WalgreensLocationListener(webIntent);
-            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locListener);
+            lm.requestLocationUpdates(lm.getBestProvider(new Criteria(), true), 0, 0, locListener);
 
             //Init the timer fresh
             timerGetLocation = new Timer();
@@ -280,7 +280,7 @@ public class RefillRxActivity extends AppCompatActivity {
                 }
             }, GPS_TIMEOUT_MS);
         } catch (SecurityException e) {
-            Log.e(TAG, "Programming Error, Should have permissions");
+            Toast.makeText(this,TAG + ": Programming Error, Should have permissions", Toast.LENGTH_SHORT).show();
 
             //Alert the user about the error
             final AlertDialog ad = new AlertDialog.Builder(RefillRxActivity.this).create();

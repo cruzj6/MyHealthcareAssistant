@@ -58,7 +58,7 @@ public class RemovableItemListViewAdapter extends ArrayAdapter<RemovableItem> {
 
         List<AppointmentItem> toRemove = new ArrayList<>();
         //Check each item for removal flag
-        for(int i = 0; i < getCount() - 1; i++)
+        for(int i = 0; i < getCount(); i++)
         {
             RemovableItem curItem = getItem(i);
             //If save mode, remove the ones that are flagged for removal
