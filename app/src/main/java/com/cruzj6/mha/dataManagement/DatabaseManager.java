@@ -3,6 +3,7 @@ package com.cruzj6.mha.dataManagement;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.ContactsContract;
@@ -355,59 +356,64 @@ public class DatabaseManager extends SQLiteOpenHelper{
     {
         PillItem newItem;
 
-        int colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry._ID);
-        long pk = c.getLong(colIndex);
+        try {
+            int colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry._ID);
+            long pk = c.getLong(colIndex);
 
-        colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_PILL_NAME);
-        String title = c.getString(colIndex);
+            colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_PILL_NAME);
+            String title = c.getString(colIndex);
 
-        colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_INSTR);
-        String instr = c.getString(colIndex);
+            colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_INSTR);
+            String instr = c.getString(colIndex);
 
-        colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_DURATION);
-        int duration = c.getInt(colIndex);
+            colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_DURATION);
+            int duration = c.getInt(colIndex);
 
-        colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_UNTIL_DATE);
-        long untilDate = c.getLong(colIndex);
+            colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_UNTIL_DATE);
+            long untilDate = c.getLong(colIndex);
 
-        colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_REFILL_DATE);
-        long refillDate = c.getLong(colIndex);
+            colIndex = c.getColumnIndexOrThrow(DatabaseContract.PillEntry.COLUMN_NAME_REFILL_DATE);
+            long refillDate = c.getLong(colIndex);
 
-        if(duration == -1)
-            newItem = new PillItem(title, instr, untilDate, refillDate);
-        else
-            newItem = new PillItem(title, instr, duration, refillDate);
+            if (duration == -1)
+                newItem = new PillItem(title, instr, untilDate, refillDate);
+            else
+                newItem = new PillItem(title, instr, duration, refillDate);
 
-        String[] dayDBContract = {
-                DatabaseContract.PillEntry.COLUMN_NAME_TIMES_S,
-                DatabaseContract.PillEntry.COLUMN_NAME_TIMES_M,
-                DatabaseContract.PillEntry.COLUMN_NAME_TIMES_T,
-                DatabaseContract.PillEntry.COLUMN_NAME_TIMES_W,
-                DatabaseContract.PillEntry.COLUMN_NAME_TIMES_R,
-                DatabaseContract.PillEntry.COLUMN_NAME_TIMES_F,
-                DatabaseContract.PillEntry.COLUMN_NAME_TIMES_Sa,
-        };
+            String[] dayDBContract = {
+                    DatabaseContract.PillEntry.COLUMN_NAME_TIMES_S,
+                    DatabaseContract.PillEntry.COLUMN_NAME_TIMES_M,
+                    DatabaseContract.PillEntry.COLUMN_NAME_TIMES_T,
+                    DatabaseContract.PillEntry.COLUMN_NAME_TIMES_W,
+                    DatabaseContract.PillEntry.COLUMN_NAME_TIMES_R,
+                    DatabaseContract.PillEntry.COLUMN_NAME_TIMES_F,
+                    DatabaseContract.PillEntry.COLUMN_NAME_TIMES_Sa,
+            };
 
-        //Now set up the times to take for each day
-        for(int i = 0; i < dayDBContract.length; i++)
-        {
-            colIndex = c.getColumnIndexOrThrow(dayDBContract[i]);
-            String timesToTake = c.getString(colIndex);
-            if(timesToTake != null && !timesToTake.equals("")) {
-                String[] timesArray = timesToTake.split(",");
-                long[] timesAsLongs = new long[timesArray.length];
+            //Now set up the times to take for each day
+            for (int i = 0; i < dayDBContract.length; i++) {
+                colIndex = c.getColumnIndexOrThrow(dayDBContract[i]);
+                String timesToTake = c.getString(colIndex);
+                if (timesToTake != null && !timesToTake.equals("")) {
+                    String[] timesArray = timesToTake.split(",");
+                    long[] timesAsLongs = new long[timesArray.length];
 
-                //Convert times into longs and store
-                for (int j = 0; j < timesArray.length; j++) {
-                    timesAsLongs[j] = Long.parseLong(timesArray[j]);
+                    //Convert times into longs and store
+                    for (int j = 0; j < timesArray.length; j++) {
+                        timesAsLongs[j] = Long.parseLong(timesArray[j]);
+                    }
+
+                    //Set the times for the item for that day
+                    newItem.setTimesForDay(i, timesAsLongs);
                 }
 
-                //Set the times for the item for that day
-                newItem.setTimesForDay(i, timesAsLongs);
             }
-
+            newItem.setPillId(pk);
+        }catch (CursorIndexOutOfBoundsException e)
+        {
+            e.printStackTrace();
+            return null;
         }
-        newItem.setPillId(pk);
         return newItem;
     }
 

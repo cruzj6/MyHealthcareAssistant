@@ -232,6 +232,10 @@ public class AppointmentSettingsDialog extends DialogFragment implements DatePic
                             //Push it into the database
                             long apptItemId = new DatabaseManager(getContext()).saveAppointment(apptItem);
 
+                            //Remove old notfications if editing
+                            if(mode == SettingsTypes.EDIT_EXISTING)
+                                NotificationItemsManager.removeApptNotifications(apptItem, getContext());
+
                             //Notification setup
                             NotificationItemsManager.createApptNotification(apptItemId, getContext());
 

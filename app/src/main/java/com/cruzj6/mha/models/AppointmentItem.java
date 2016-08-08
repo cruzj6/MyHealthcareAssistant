@@ -4,6 +4,7 @@ package com.cruzj6.mha.models;
 import android.content.Context;
 
 import com.cruzj6.mha.dataManagement.DatabaseManager;
+import com.cruzj6.mha.helpers.NotificationItemsManager;
 import com.cruzj6.mha.models.RemovableItem;
 
 import java.text.SimpleDateFormat;
@@ -86,6 +87,7 @@ public class AppointmentItem extends RemovableItem implements Comparable<Appoint
 
     @Override
     public void removeFromDatabase(Context context) {
+        NotificationItemsManager.removeApptNotifications(this, context);
         new DatabaseManager(context).deleteAppointment(getApptId());
     }
 

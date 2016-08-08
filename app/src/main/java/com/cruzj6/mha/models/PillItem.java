@@ -4,6 +4,7 @@ import android.content.Context;
 import android.provider.ContactsContract;
 
 import com.cruzj6.mha.dataManagement.DatabaseManager;
+import com.cruzj6.mha.helpers.NotificationItemsManager;
 import com.cruzj6.mha.models.RemovableItem;
 
 import org.joda.time.DateTime;
@@ -117,6 +118,8 @@ public class PillItem extends RemovableItem implements Comparable<PillItem>{
 
     @Override
     public void removeFromDatabase(Context context) {
+        //Delete notifications
+        NotificationItemsManager.removeOldPillNotifications(this, context);
         new DatabaseManager(context).deletePill(getPillId());
     }
 
@@ -150,7 +153,7 @@ public class PillItem extends RemovableItem implements Comparable<PillItem>{
     @Override
     public int compareTo(PillItem another) {
         DateTime today = new DateTime(new Date());
-        int dayStoSa = today.getDayOfWeek() == 6 ? 0 : today.getDayOfWeek() - 1;
+        int dayStoSa = today.getDayOfWeek() == 7 ? 0 : today.getDayOfWeek();
         List<TimesPerDayManagerItem> thisManagerItems =  getTimesManager().getTimesPerDay();
         List<TimesPerDayManagerItem> anManagerItems = another.getTimesManager().getTimesPerDay();
 
